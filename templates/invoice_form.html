@@ -1,0 +1,179 @@
+{% extends "base.html" %}
+{% block title %}New Invoice – GSTLink{% endblock %}
+{% block content %}
+<div class="container py-4">
+  <div class="page-header">
+    <div class="d-flex justify-content-between align-items-center">
+      <h4 class="page-title"><i class="bi bi-plus-circle me-2" style="color:var(--teal)"></i>Create New Invoice</h4>
+      <button class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#contractModal">
+        <i class="bi bi-stars me-2"></i>AI Contract Parser
+      </button>
+    </div>
+  </div>
+
+  <form method="POST" id="invoiceForm">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <div class="row g-4">
+      <!-- LEFT COLUMN: Form -->
+      <div class="col-lg-7">
+
+        <!-- Client Section -->
+        <div class="form-section">
+          <div class="section-title"><i class="bi bi-person-circle"></i>Client Details</div>
+          <div class="mb-3">
+            <label class="form-label">Select Client *</label>
+            <select name="client_id" id="client_id" class="form-select" required>
+              <option value="">— Choose a client —</option>
+              {% for c in clients %}
+              <option value="{{ c.id }}" data-state="{{ c.state }}" data-gstin="{{ c.client_gstin or '' }}">
+                {{ c.client_name }} {% if c.client_gstin %}· {{ c.client_gstin }}{% endif %} ({{ c.state or 'No state' }})
+              </option>
+              {% endfor %}
+            </select>
+            <div class="form-text"><a href="{{ url_for('add_client') }}" class="text-decoration-none" style="color:var(--teal)"><i class="bi bi-plus me-1"></i>Add new client</a></div>
+          </div>
+        </div>
+
+        <!-- Invoice Details -->
+        <div class="form-section">
+          <div class="section-title"><i class="bi bi-file-text"></i>Invoice Details</div>
+          <div class="mb-3">
+            <label class="form-label">Service Description *</label>
+            <textarea name="description" id="description" class="form-control" rows="2" placeholder="e.g. Web development for e-commerce website — Phase 1" required></textarea>
+          </div>
+          <div class="row g-3">
+            <div class="col-md-6">
+              <label class="form-label">SAC/HSN Code</label>
+              <select name="hsn_sac" id="hsn_sac" class="form-select">
+                <option value="">Select SAC Code</option>
+                {% for code, desc in hsn_codes.items() %}
+                <option value="{{ code }}">{{ code }} — {{ desc }}</option>
+                {% endfor %}
+              </select>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Payment Due (days)</label>
+              <select name="due_days" class="form-select">
+                <option value="7">7 days</option>
+                <option value="15">15 days</option>
+                <option value="30" selected>30 days</option>
+                <option value="45">45 days</option>
+                <option value="60">60 days</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- Amount & GST -->
+        <div class="form-section">
+          <div class="section-title"><i class="bi bi-calculator"></i>Amount & GST</div>
+          <input type="hidden" id="supplier_state_hidden" value="{{ current_user.gstin[:2] if current_user.gstin else '' }}">
+          <div class="row g-3">
+            <div class="col-md-6">
+              <label class="form-label">Taxable Amount (₹) *</label>
+              <div class="input-group">
+                <span class="input-group-text">₹</span>
+                <input type="number" name="amount" id="amount" class="form-control" placeholder="50000" step="0.01" min="1" required>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">GST Rate</label>
+              <select name="gst_rate" id="gst_rate" class="form-select">
+                {% for rate in gst_rates %}
+                <option value="{{ rate }}" {{ 'selected' if rate == 18 else '' }}>{{ rate }}%</option>
+                {% endfor %}
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- UPI & Notes -->
+        <div class="form-section">
+          <div class="section-title"><i class="bi bi-phone"></i>Payment & Notes</div>
+          <div class="mb-3">
+            <label class="form-label">Your UPI ID <span class="text-muted">(for QR code on invoice)</span></label>
+            <input type="text" name="upi_id" class="form-control mono" placeholder="yourname@paytm"
+                   pattern="[\w.\-]{2,256}@[a-zA-Z]{2,64}" title="Enter a valid UPI ID e.g. yourname@upi">
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Notes <span class="text-muted">(optional)</span></label>
+            <textarea name="notes" class="form-control" rows="2" placeholder="e.g. Bank transfer details, payment terms, etc."></textarea>
+          </div>
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-lg w-100 py-3">
+          <i class="bi bi-file-earmark-check me-2"></i>Generate GST Invoice
+        </button>
+      </div>
+
+      <!-- RIGHT COLUMN: Live Preview -->
+      <div class="col-lg-5">
+        <div class="sticky-top" style="top:80px">
+          <div class="card">
+            <div class="card-header"><i class="bi bi-eye me-2"></i>Live GST Preview</div>
+            <div class="card-body p-3">
+              <table class="table table-sm gst-table mb-0">
+                <tr><td class="text-muted">Supply Type</td><td class="fw-600 text-end" id="display_gst_type">—</td></tr>
+                <tr><td class="text-muted">Taxable Amount</td><td class="fw-600 text-end" id="display_base">₹0.00</td></tr>
+                <tr id="cgst_sgst_row" style="display:none">
+                  <td class="text-muted">CGST</td><td class="fw-600 text-end" id="display_cgst" style="color:var(--teal)">₹0.00</td>
+                </tr>
+                <tr id="sgst_row" style="display:none">
+                  <td class="text-muted">SGST</td><td class="fw-600 text-end" id="display_sgst" style="color:var(--teal)">₹0.00</td>
+                </tr>
+                <tr id="igst_row" style="display:none">
+                  <td class="text-muted">IGST</td><td class="fw-600 text-end" id="display_igst" style="color:var(--teal)">₹0.00</td>
+                </tr>
+                <tr class="gst-total-row"><td><strong>Total Payable</strong></td><td class="text-end fw-800 fs-5" id="display_total">₹0.00</td></tr>
+              </table>
+            </div>
+          </div>
+
+          <div class="card mt-3">
+            <div class="card-body p-3">
+              <p class="small fw-600 mb-2"><i class="bi bi-info-circle me-1" style="color:var(--teal)"></i>GST Type Logic</p>
+              <p class="small text-muted mb-1">🟢 <strong>Intra-state:</strong> Supplier & client in same state → CGST + SGST (9% + 9%)</p>
+              <p class="small text-muted mb-0">🔵 <strong>Inter-state:</strong> Different states → IGST (18%)</p>
+            </div>
+          </div>
+
+          {% if not current_user.gstin %}
+          <div class="alert alert-warning small mt-3">
+            <i class="bi bi-exclamation-triangle me-1"></i>
+            Add your <a href="{{ url_for('profile') }}" style="color:inherit;font-weight:700">GSTIN in Profile</a> for accurate CGST/IGST calculation.
+          </div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </form>
+</div>
+
+<!-- AI Contract Parser Modal -->
+<div class="modal fade" id="contractModal" tabindex="-1">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header border-0">
+        <h5 class="modal-title fw-700"><i class="bi bi-stars me-2" style="color:var(--teal)"></i>AI Contract Parser</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <p class="text-muted small mb-3">Paste your contract or project agreement below. Our AI will extract client name, amount, GSTIN, and service description automatically.</p>
+        <textarea id="contractText" class="form-control" rows="10" placeholder="Paste your contract text here...
+
+Example:
+This Service Agreement is entered between Acme Corp Pvt Ltd (GSTIN: 27AADCA1234F1Z5) and the Freelancer for development of an e-commerce website. The total project value is ₹75,000 excluding GST. Payment is due within 30 days of invoice."></textarea>
+        <div class="mt-2 small text-muted">
+          <i class="bi bi-lock me-1"></i>Your contract text is processed securely and not stored.
+        </div>
+      </div>
+      <div class="modal-footer border-0">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        <button type="button" class="btn btn-primary" id="parseContractBtn">
+          <i class="bi bi-stars me-2"></i>Parse with AI
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

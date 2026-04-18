@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Invoice {{ invoice.invoice_number }} – GSTLink Verified</title>
+<!-- Prevent search engines and bots from indexing sensitive invoice data -->
+<meta name="robots" content="noindex, nofollow"/>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/css/bootstrap.min.css"/>
+<style>
+body{font-family:'Segoe UI',sans-serif;background:#f0faf9;}
+.inv-box{max-width:680px;margin:40px auto;background:white;border-radius:16px;padding:40px;box-shadow:0 8px 32px rgba(0,137,123,.15);}
+.brand{font-size:1.8rem;font-weight:800;}.brand span{color:#00897B;}
+.verified-badge{background:#e0f7f4;color:#00695C;padding:8px 20px;border-radius:20px;display:inline-flex;align-items:center;gap:8px;font-weight:600;font-size:.9rem;}
+</style>
+</head>
+<body>
+<div class="inv-box">
+  <div class="d-flex justify-content-between align-items-start mb-4">
+    <div class="brand">GST<span>Link</span></div>
+    <div class="verified-badge">✅ Verified Invoice</div>
+  </div>
+  <h4 class="fw-700">Invoice #{{ invoice.invoice_number }}</h4>
+  <p class="text-muted">Issued: {{ invoice.created_at.strftime('%d %b %Y') }}</p>
+  <hr>
+  <div class="row g-3 mb-4">
+    <div class="col-6">
+      <div class="small text-muted fw-600">BILLED TO</div>
+      <div class="fw-600">{{ client.client_name }}</div>
+      {% if client.client_gstin %}
+      {# Mask GSTIN — show only first 2 (state code) and last 3 chars #}
+      <div class="small text-muted">GSTIN: {{ client.client_gstin[:2] }}***********{{ client.client_gstin[-3:] }}</div>
+      {% endif %}
+    </div>
+    <div class="col-6 text-end">
+      <div class="small text-muted fw-600">AMOUNT</div>
+      <div class="fw-800 fs-4" style="color:#00897B">₹{{ "%.2f"|format(invoice.total) }}</div>
+      <span class="badge bg-{{ 'success' if invoice.payment_status == 'paid' else 'danger' if invoice.payment_status == 'unpaid' else 'warning' }}">{{ invoice.payment_status.title() }}</span>
+    </div>
+  </div>
+  {% if invoice.description %}
+  <div class="p-3 rounded mb-3" style="background:#f7fafb;"><strong>Service:</strong> {{ invoice.description }}</div>
+  {% endif %}
+  <div class="text-center text-muted small mt-4">This invoice was generated and verified by GSTLink.in</div>
+</div>
+</body>
+</html>

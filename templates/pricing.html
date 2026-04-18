@@ -1,0 +1,231 @@
+{% extends "base.html" %}
+{% block title %}Pricing – GSTLink{% endblock %}
+{% block og_title %}GSTLink Pricing – Free Trial, Then ₹{{ price_inr }}/mo{% endblock %}
+{% block content %}
+<div class="container py-5">
+  <div class="text-center mb-5">
+    <div class="d-inline-flex align-items-center gap-2 mb-3" style="background:rgba(0,191,165,.1);border:1px solid rgba(0,191,165,.3);border-radius:20px;padding:6px 18px;">
+      <i class="bi bi-gift-fill" style="color:#00BFA5;"></i>
+      <span class="small fw-600" style="color:#00BFA5;">{{ trial_days }}-day free trial · No credit card required</span>
+    </div>
+    <h2 class="fw-800 fs-1">Simple, Honest Pricing</h2>
+    <p class="text-muted">Try everything free for {{ trial_days }} days. Then {{ daily_limit }} free invoices/day — forever.</p>
+  </div>
+
+  <div class="row justify-content-center g-4 align-items-stretch">
+
+    <!-- FREE PLAN -->
+    <div class="col-md-4">
+      <div class="pricing-card h-100 d-flex flex-column">
+        <div>
+          <h4 class="fw-700">Free</h4>
+          <p class="text-muted small">After your trial ends</p>
+          <div class="my-3">
+            <span class="price-currency">₹</span><span class="price-amount">0</span>
+            <span class="text-muted">/month</span>
+          </div>
+          <div class="alert alert-light border mb-3 py-2 px-3 small">
+            <i class="bi bi-calendar-check me-1 text-success"></i>
+            <strong>{{ daily_limit }} invoices/day</strong> — resets every midnight
+          </div>
+          <ul class="list-unstyled mb-4">
+            <li class="py-1"><i class="bi bi-check-circle-fill text-success me-2"></i>{{ daily_limit }} invoices per day (free forever)</li>
+            <li class="py-1"><i class="bi bi-check-circle-fill text-success me-2"></i>Auto CGST/SGST/IGST</li>
+            <li class="py-1"><i class="bi bi-check-circle-fill text-success me-2"></i>PDF download</li>
+            <li class="py-1"><i class="bi bi-check-circle-fill text-success me-2"></i>WhatsApp share</li>
+            <li class="py-1"><i class="bi bi-check-circle-fill text-success me-2"></i>Client directory</li>
+            <li class="py-1 text-muted"><i class="bi bi-x-circle me-2"></i>AI Contract Parser</li>
+            <li class="py-1 text-muted"><i class="bi bi-x-circle me-2"></i>UPI QR Code</li>
+            <li class="py-1 text-muted"><i class="bi bi-x-circle me-2"></i>Compliance dashboard</li>
+          </ul>
+        </div>
+        <div class="mt-auto">
+          {% if current_user.is_authenticated %}
+            {% if current_user.plan_type == 'free' %}
+            <button class="btn btn-outline-secondary w-100" disabled>Current Plan</button>
+            {% else %}
+            <a href="{{ url_for('dashboard') }}" class="btn btn-outline-primary w-100">Go to Dashboard</a>
+            {% endif %}
+          {% else %}
+          <a href="{{ url_for('register') }}" class="btn btn-outline-primary w-100">Start Free</a>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+
+    <!-- TRIAL PLAN -->
+    <div class="col-md-4">
+      <div class="pricing-card h-100 d-flex flex-column" style="border-color:#FF8F00;background:linear-gradient(135deg,#1a1a2e,#1c2a1a);">
+        <span class="popular-badge" style="background:linear-gradient(135deg,#FF8F00,#FFB300);">🎁 START HERE</span>
+        <div>
+          <h4 class="fw-700 text-white">Free Trial</h4>
+          <p class="small" style="color:rgba(255,255,255,.6);">Everything unlocked, {{ trial_days }} days</p>
+          <div class="my-3">
+            <span class="price-currency" style="color:#FFB300;">₹</span>
+            <span class="price-amount" style="color:#FFB300;">0</span>
+            <span style="color:rgba(255,255,255,.5);">for {{ trial_days }} days</span>
+          </div>
+          <ul class="list-unstyled mb-4">
+            <li class="py-1"><i class="bi bi-check-circle-fill me-2" style="color:#FFB300;"></i><strong class="text-white">Unlimited invoices</strong> for {{ trial_days }} days</li>
+            <li class="py-1"><i class="bi bi-check-circle-fill me-2" style="color:#FFB300;"></i><span style="color:rgba(255,255,255,.85);">AI Contract Parser</span></li>
+            <li class="py-1"><i class="bi bi-check-circle-fill me-2" style="color:#FFB300;"></i><span style="color:rgba(255,255,255,.85);">UPI QR on every invoice</span></li>
+            <li class="py-1"><i class="bi bi-check-circle-fill me-2" style="color:#FFB300;"></i><span style="color:rgba(255,255,255,.85);">GST Compliance Dashboard</span></li>
+            <li class="py-1"><i class="bi bi-check-circle-fill me-2" style="color:#FFB300;"></i><span style="color:rgba(255,255,255,.85);">All Pro features</span></li>
+            <li class="py-1"><i class="bi bi-info-circle me-2" style="color:rgba(255,255,255,.4);"></i><span style="color:rgba(255,255,255,.4);">No credit card needed</span></li>
+          </ul>
+        </div>
+        <div class="mt-auto">
+          {% if current_user.is_authenticated %}
+            {% if current_user.is_trial_active %}
+            <button class="btn w-100 fw-700" style="background:linear-gradient(135deg,#FF8F00,#FFB300);color:#fff;" disabled>
+              ✓ Trial Active — {{ current_user.trial_days_left }} days left
+            </button>
+            {% else %}
+            <a href="{{ url_for('dashboard') }}" class="btn btn-outline-warning w-100">Go to Dashboard</a>
+            {% endif %}
+          {% else %}
+          <a href="{{ url_for('register') }}" class="btn w-100 fw-700" style="background:linear-gradient(135deg,#FF8F00,#FFB300);color:#fff;">
+            Start {{ trial_days }}-Day Free Trial
+          </a>
+          <p class="text-center mt-2 small" style="color:rgba(255,255,255,.4);">No credit card · Instant access</p>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+
+    <!-- PRO PLAN -->
+    <div class="col-md-4">
+      <div class="pricing-card popular h-100 d-flex flex-column">
+        <span class="popular-badge">⭐ BEST VALUE</span>
+        <div>
+          <h4 class="fw-700 text-white">Pro</h4>
+          <p class="small" style="color:rgba(255,255,255,.6);">For serious freelancers</p>
+          <div class="my-3">
+            <span class="price-currency" style="color:#00BFA5;">₹</span>
+            <span class="price-amount" style="color:#00BFA5;">{{ price_inr }}</span>
+            <span style="color:rgba(255,255,255,.5);">/month</span>
+          </div>
+          <ul class="list-unstyled mb-4">
+            <li class="py-1"><i class="bi bi-check-circle-fill me-2" style="color:#00BFA5;"></i>Unlimited invoices</li>
+            <li class="py-1"><i class="bi bi-check-circle-fill me-2" style="color:#00BFA5;"></i>AI Contract Parser (Groq)</li>
+            <li class="py-1"><i class="bi bi-check-circle-fill me-2" style="color:#00BFA5;"></i>UPI QR on every invoice</li>
+            <li class="py-1"><i class="bi bi-check-circle-fill me-2" style="color:#00BFA5;"></i>GST Compliance Dashboard</li>
+            <li class="py-1"><i class="bi bi-check-circle-fill me-2" style="color:#00BFA5;"></i>Invoice verification QR</li>
+            <li class="py-1"><i class="bi bi-check-circle-fill me-2" style="color:#00BFA5;"></i>Priority email support</li>
+            <li class="py-1"><i class="bi bi-check-circle-fill me-2" style="color:#00BFA5;"></i>Export invoice data (CSV/Excel)</li>
+            <li class="py-1"><i class="bi bi-check-circle-fill me-2" style="color:#00BFA5;"></i>Recurring invoice scheduler</li>
+            <li class="py-1"><i class="bi bi-check-circle-fill me-2" style="color:#00BFA5;"></i>Custom invoice branding &amp; logo</li>
+            <li class="py-1"><i class="bi bi-check-circle-fill me-2" style="color:#00BFA5;"></i>Income &amp; expense tracker</li>
+            <li class="py-1"><i class="bi bi-check-circle-fill me-2" style="color:#00BFA5;"></i>GSTR-1 &amp; GSTR-3B summary export</li>
+            <li class="py-1"><i class="bi bi-check-circle-fill me-2" style="color:#00BFA5;"></i>Late payment reminders (WhatsApp)</li>
+            <li class="py-1"><i class="bi bi-check-circle-fill me-2" style="color:#00BFA5;"></i>Multi-currency invoices</li>
+          </ul>
+        </div>
+        <div class="mt-auto">
+          {% if current_user.is_authenticated %}
+            {% if current_user.plan_type == 'pro' %}
+            <button class="btn btn-success w-100" disabled>✓ You're on Pro</button>
+            {% else %}
+            <form method="POST" action="{{ url_for('create_checkout') }}">
+              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+              <button type="submit" class="btn btn-primary w-100" style="background:linear-gradient(135deg,#00897B,#00BFA5);">
+                Upgrade to Pro — ₹{{ price_inr }}/mo
+              </button>
+            </form>
+            {% endif %}
+          {% else %}
+          <a href="{{ url_for('register') }}" class="btn btn-primary w-100" style="background:linear-gradient(135deg,#00897B,#00BFA5);">Get Started</a>
+          {% endif %}
+          <p class="text-center mt-2 small" style="color:rgba(255,255,255,.5);">Cancel anytime · GST invoice provided</p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- FAQ Row -->
+  <div class="row justify-content-center mt-5">
+    <div class="col-md-8">
+      <h5 class="fw-700 text-center mb-4">Frequently Asked Questions</h5>
+      <div class="accordion" id="pricingFaq">
+        <div class="accordion-item border mb-2" style="border-radius:10px;overflow:hidden;">
+          <h2 class="accordion-header">
+            <button class="accordion-button collapsed fw-600" type="button" data-bs-toggle="collapse" data-bs-target="#faq1">
+              What happens after my 30-day trial?
+            </button>
+          </h2>
+          <div id="faq1" class="accordion-collapse collapse" data-bs-parent="#pricingFaq">
+            <div class="accordion-body text-muted small">
+              After 30 days, you automatically move to the Free plan — you can still create <strong>{{ daily_limit }} invoices per day</strong>, free forever. No card is charged. If you need unlimited invoices, upgrade to Pro anytime.
+            </div>
+          </div>
+        </div>
+        <div class="accordion-item border mb-2" style="border-radius:10px;overflow:hidden;">
+          <h2 class="accordion-header">
+            <button class="accordion-button collapsed fw-600" type="button" data-bs-toggle="collapse" data-bs-target="#faq2">
+              Does the daily limit reset every day?
+            </button>
+          </h2>
+          <div id="faq2" class="accordion-collapse collapse" data-bs-parent="#pricingFaq">
+            <div class="accordion-body text-muted small">
+              Yes — your free {{ daily_limit }} invoices reset every midnight (IST). So even on the free plan, you can create up to 150 invoices per month at no cost.
+            </div>
+          </div>
+        </div>
+        <div class="accordion-item border mb-2" style="border-radius:10px;overflow:hidden;">
+          <h2 class="accordion-header">
+            <button class="accordion-button collapsed fw-600" type="button" data-bs-toggle="collapse" data-bs-target="#faq3">
+              Is my invoice data safe?
+            </button>
+          </h2>
+          <div id="faq3" class="accordion-collapse collapse" data-bs-parent="#pricingFaq">
+            <div class="accordion-body text-muted small">
+              Yes. All data is encrypted in transit (HTTPS). Your invoice data is stored securely and never shared with third parties. See our <a href="{{ url_for('privacy') }}">Privacy Policy</a>.
+            </div>
+          </div>
+        </div>
+        <div class="accordion-item border mb-2" style="border-radius:10px;overflow:hidden;">
+          <h2 class="accordion-header">
+            <button class="accordion-button collapsed fw-600" type="button" data-bs-toggle="collapse" data-bs-target="#faq4">
+              Why is Pro only ₹199/month?
+            </button>
+          </h2>
+          <div id="faq4" class="accordion-collapse collapse" data-bs-parent="#pricingFaq">
+            <div class="accordion-body text-muted small">
+              We believe every Indian freelancer deserves professional invoicing tools without breaking the bank. At ₹199/month — less than a cup of chai a week — GSTLink Pro is priced to be a no-brainer for any working freelancer.
+            </div>
+          </div>
+        </div>
+        <div class="accordion-item border mb-2" style="border-radius:10px;overflow:hidden;">
+          <h2 class="accordion-header">
+            <button class="accordion-button collapsed fw-600" type="button" data-bs-toggle="collapse" data-bs-target="#faq5">
+              How do recurring invoices work?
+            </button>
+          </h2>
+          <div id="faq5" class="accordion-collapse collapse" data-bs-parent="#pricingFaq">
+            <div class="accordion-body text-muted small">
+              Set up a recurring schedule (weekly/monthly) for any client and GSTLink will auto-generate the invoice on the due date. You can review before it's sent, or enable auto-send for fully hands-off billing.
+            </div>
+          </div>
+        </div>
+        <div class="accordion-item border mb-2" style="border-radius:10px;overflow:hidden;">
+          <h2 class="accordion-header">
+            <button class="accordion-button collapsed fw-600" type="button" data-bs-toggle="collapse" data-bs-target="#faq6">
+              Can I invoice clients in USD or other currencies?
+            </button>
+          </h2>
+          <div id="faq6" class="accordion-collapse collapse" data-bs-parent="#pricingFaq">
+            <div class="accordion-body text-muted small">
+              Yes! Pro users can create invoices in USD, EUR, GBP and other major currencies. The invoice displays the foreign currency amount while GST is correctly applied in INR, keeping you fully compliant.
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="text-center mt-4">
+    <p class="text-muted small">🔒 Secured by Stripe · GST applicable on subscription · All prices in INR</p>
+  </div>
+</div>
+{% endblock %}

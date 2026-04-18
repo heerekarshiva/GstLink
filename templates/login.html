@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block title %}Login{% endblock %}
+{% block content %}
+<div class="auth-wrapper">
+  <div class="auth-card">
+    <div class="text-center mb-4">
+      <div class="brand-logo mb-3">⚡</div>
+      <h2 class="fw-bold">Welcome Back</h2>
+      <p class="text-muted">Login to your GSTLink account</p>
+    </div>
+    <form method="POST">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <div class="mb-3">
+        <label class="form-label fw-semibold">Email Address</label>
+        <input type="email" name="email" class="form-control form-control-lg" placeholder="you@example.com" required>
+      </div>
+      <div class="mb-4">
+        <label class="form-label fw-semibold">Password</label>
+        <input type="password" name="password" class="form-control form-control-lg" placeholder="••••••••" required>
+      </div>
+      <div class="mb-3 d-flex align-items-center justify-content-between">
+        <div class="form-check">
+          <input class="form-check-input" type="checkbox" name="remember" id="rememberMe">
+          <label class="form-check-label text-muted small" for="rememberMe">Remember me on this device</label>
+        </div>
+        <a href="{{ url_for('forgot_password') }}" class="small text-decoration-none" style="color:var(--teal)">Forgot password?</a>
+      </div>
+      <button type="submit" class="btn btn-primary w-100 btn-lg">Login <i class="bi bi-arrow-right ms-2"></i></button>
+    </form>
+    <div class="text-center mt-4">
+      <p class="text-muted">New to GSTLink? <a href="{{ url_for('register') }}" class="fw-semibold">Create free account</a></p>
+    </div>
+  </div>
+</div>
+{% endblock %}

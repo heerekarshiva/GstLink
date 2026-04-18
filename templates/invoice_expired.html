@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Invoice Link Expired – GSTLink</title>
+<meta name="robots" content="noindex, nofollow"/>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/css/bootstrap.min.css"/>
+<style>
+body{font-family:'Segoe UI',sans-serif;background:#f0faf9;display:flex;align-items:center;justify-content:center;min-height:100vh;}
+.exp-box{max-width:480px;background:white;border-radius:16px;padding:48px 40px;box-shadow:0 8px 32px rgba(0,137,123,.15);text-align:center;}
+.brand{font-size:1.6rem;font-weight:800;margin-bottom:24px;}.brand span{color:#00897B;}
+.icon{font-size:3rem;margin-bottom:16px;}
+</style>
+</head>
+<body>
+<div class="exp-box">
+  <div class="brand">GST<span>Link</span></div>
+  <div class="icon">🔒</div>
+  <h4 class="fw-700 mb-2">Invoice Link Expired</h4>
+  <p class="text-muted mb-1">The public link for invoice <strong>{{ invoice_number }}</strong> has expired.</p>
+  <p class="text-muted small">Public invoice links expire after 72 hours for security. Please ask the sender to share a fresh link.</p>
+  <hr class="my-4"/>
+  <p class="text-muted small">Are you the invoice owner? <a href="/login">Log in</a> to view and re-share this invoice.</p>
+</div>
+</body>
+</html>

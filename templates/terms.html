@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+{% block title %}Terms of Service – GSTLink{% endblock %}
+{% block meta_description %}GSTLink Terms of Service. Understand your rights and responsibilities when using the GSTLink invoicing platform.{% endblock %}
+{% block content %}
+<div class="legal-page">
+  <h1>Terms of Service</h1>
+  <p class="last-updated">Last updated: March 2025 &nbsp;·&nbsp; Effective: March 2025</p>
+
+  <p>These Terms of Service ("Terms") govern your access to and use of GSTLink ("the Service"). By creating an account or using the Service, you agree to be bound by these Terms. If you do not agree, do not use GSTLink.</p>
+
+  <h2>1. The Service</h2>
+  <p>GSTLink provides an online tool for Indian freelancers and small businesses to generate GST-compliant invoices, manage clients, and track compliance. The Service is provided "as is" and we may update features at any time.</p>
+
+  <h2>2. Eligibility</h2>
+  <p>You must be at least 18 years old and legally capable of entering into contracts under Indian law to use GSTLink. By registering, you represent that you meet these requirements.</p>
+
+  <h2>3. Account Responsibilities</h2>
+  <ul>
+    <li>You are responsible for maintaining the confidentiality of your account credentials.</li>
+    <li>You are responsible for all activity that occurs under your account.</li>
+    <li>Notify us immediately at <a href="mailto:support@gstlink.in">support@gstlink.in</a> if you suspect unauthorised access.</li>
+    <li>You must provide accurate GSTIN and business information. GSTLink is not responsible for invoices generated with incorrect details.</li>
+  </ul>
+
+  <h2>4. Free and Pro Plans</h2>
+  <p>The Free plan allows up to {{ daily_limit }} invoices per day (resets every midnight). The Pro plan, billed monthly at the current advertised price, unlocks unlimited invoices and additional features. Prices include applicable GST. We reserve the right to change pricing with 30 days' notice to existing subscribers.</p>
+
+  <h2>5. Payments and Cancellation</h2>
+  <p>Pro subscriptions are billed monthly via Stripe. You may cancel at any time from your profile; cancellation takes effect at the end of the current billing period. We do not provide refunds for partial months. Failed payments will result in downgrade to the Free plan.</p>
+
+  <h2>6. Acceptable Use</h2>
+  <p>You agree not to:</p>
+  <ul>
+    <li>Use GSTLink for any unlawful purpose or in violation of GST regulations.</li>
+    <li>Generate fraudulent, fictitious, or tax-evasion invoices.</li>
+    <li>Attempt to reverse-engineer, scrape, or overload the Service.</li>
+    <li>Share your account credentials with others.</li>
+    <li>Upload malicious code or attempt to compromise system security.</li>
+  </ul>
+  <p>Violation may result in immediate account termination without refund.</p>
+
+  <h2>7. Intellectual Property</h2>
+  <p>The GSTLink platform, design, and underlying code are owned by us and protected under applicable IP laws. You retain ownership of the invoice data you create. You grant us a limited licence to store and process your data solely to provide the Service.</p>
+
+  <h2>8. Disclaimer of Warranties</h2>
+  <p>The Service is provided "as is" without warranties of any kind. We do not warrant that invoices generated are accepted by the GST portal or that the Service is error-free. GSTLink is a tool — you are responsible for verifying the accuracy of your GST filings with a qualified CA or tax consultant.</p>
+
+  <h2>9. Limitation of Liability</h2>
+  <p>To the maximum extent permitted by law, GSTLink's total liability for any claim arising from use of the Service shall not exceed the amount you paid us in the 3 months preceding the claim. We are not liable for indirect, incidental, or consequential damages.</p>
+
+  <h2>10. Governing Law</h2>
+  <p>These Terms are governed by the laws of India. Any disputes shall be subject to the exclusive jurisdiction of courts in India.</p>
+
+  <h2>11. Changes to Terms</h2>
+  <p>We may update these Terms. Material changes will be notified via email. Continued use after the effective date constitutes acceptance.</p>
+
+  <h2>12. Contact</h2>
+  <p>Questions about these Terms: <a href="mailto:support@gstlink.in">support@gstlink.in</a></p>
+</div>
+{% endblock %}
+{% block extra_head %}
+  {# Pass free_limit to this template via the route #}
+{% endblock %}

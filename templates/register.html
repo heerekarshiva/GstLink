@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block title %}Register{% endblock %}
+{% block content %}
+<div class="auth-wrapper">
+  <div class="auth-card">
+    <div class="text-center mb-4">
+      <div class="brand-logo mb-3">⚡</div>
+      <h2 class="fw-bold">Start for Free</h2>
+      <p class="text-muted">Get 5 free GST invoices instantly</p>
+    </div>
+    <form method="POST">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <div class="mb-3">
+        <label class="form-label fw-semibold">Full Name</label>
+        <input type="text" name="name" class="form-control form-control-lg" placeholder="Rahul Sharma" required>
+      </div>
+      <div class="mb-3">
+        <label class="form-label fw-semibold">Email Address</label>
+        <input type="email" name="email" class="form-control form-control-lg" placeholder="you@example.com" required>
+      </div>
+      <div class="mb-4">
+        <label class="form-label fw-semibold">Password</label>
+        <input type="password" name="password" class="form-control form-control-lg" placeholder="Min 8 characters" required minlength="8">
+      </div>
+      <button type="submit" class="btn btn-primary w-100 btn-lg">Create Free Account <i class="bi bi-arrow-right ms-2"></i></button>
+      <p class="text-center text-muted small mt-3">By registering, you agree to our Terms of Service</p>
+    </form>
+    <div class="text-center mt-3">
+      <p class="text-muted">Already have an account? <a href="{{ url_for('login') }}" class="fw-semibold">Login</a></p>
+    </div>
+  </div>
+</div>
+{% endblock %}

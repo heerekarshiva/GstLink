@@ -1,0 +1,16 @@
+Flask==3.0.3
+Flask-SQLAlchemy==3.1.1
+Flask-Login==0.6.3
+Flask-WTF==1.2.1
+Flask-Limiter==3.8.0
+Flask-Talisman==1.1.0
+Flask-Mail==0.10.0
+Werkzeug==3.0.3
+qrcode[pil]==7.4.2
+Pillow==10.4.0
+reportlab==4.2.2
+stripe==10.8.0
+groq==0.9.0
+python-dotenv==1.0.1
+gunicorn==22.0.0
+WTForms==3.1.2

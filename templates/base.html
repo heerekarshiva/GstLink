@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
+<!-- PRIMARY META -->
+<title>{% block title %}GSTLink – GST Invoice Generator{% endblock %}</title>
+<meta name="description" content="{% block meta_description %}Generate GST-compliant invoices in seconds. Auto CGST/SGST/IGST, AI contract parser, WhatsApp share & UPI QR. Built for Indian freelancers.{% endblock %}"/>
+<meta name="keywords" content="GST invoice generator, Indian freelancer invoicing, CGST SGST IGST calculator, GST billing software, freelance invoice India"/>
+<meta name="author" content="GSTLink"/>
+<link rel="canonical" href="{{ config.BASE_URL }}{{ request.path }}"/>
+
+<!-- OPEN GRAPH -->
+<meta property="og:type" content="website"/>
+<meta property="og:url" content="{{ config.BASE_URL }}{{ request.path }}"/>
+<meta property="og:title" content="{% block og_title %}GSTLink – GST Invoice Generator for Indian Freelancers{% endblock %}"/>
+<meta property="og:description" content="{% block og_description %}Generate GST-compliant invoices in seconds. Auto CGST/SGST/IGST, AI contract parser, WhatsApp share & UPI QR. Free plan available.{% endblock %}"/>
+<meta property="og:image" content="{{ config.BASE_URL }}/static/img/og-image.png"/>
+<meta property="og:image:width" content="1200"/>
+<meta property="og:image:height" content="630"/>
+<meta property="og:site_name" content="GSTLink"/>
+<meta property="og:locale" content="en_IN"/>
+
+<!-- TWITTER CARD -->
+<meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:title" content="{% block twitter_title %}GSTLink – GST Invoice Generator{% endblock %}"/>
+<meta name="twitter:description" content="Generate GST invoices in seconds. Auto tax calc, WhatsApp share, UPI QR. Free for Indian freelancers."/>
+<meta name="twitter:image" content="{{ config.BASE_URL }}/static/img/og-image.png"/>
+
+<!-- FAVICON -->
+<link rel="icon" type="image/png" sizes="32x32" href="{{ url_for('static', filename='img/favicon-32.png') }}"/>
+<link rel="icon" type="image/png" sizes="16x16" href="{{ url_for('static', filename='img/favicon-16.png') }}"/>
+<link rel="apple-touch-icon" sizes="180x180" href="{{ url_for('static', filename='img/apple-touch-icon.png') }}"/>
+<link rel="shortcut icon" href="{{ url_for('static', filename='img/favicon.ico') }}"/>
+
+<!-- STYLESHEETS -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/css/bootstrap.min.css"/>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.3/font/bootstrap-icons.min.css"/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}"/>
+{% block extra_head %}{% endblock %}
+</head>
+<body>
+
+<!-- COOKIE NOTICE -->
+<div id="cookieBanner" class="cookie-banner" style="display:none;">
+  <div class="d-flex align-items-center gap-3 flex-wrap">
+    <i class="bi bi-cookie" style="font-size:1.4rem;color:#00BFA5;flex-shrink:0;"></i>
+    <p class="mb-0 small" style="flex:1;">
+      We use essential cookies to keep you logged in and process payments securely. No tracking or advertising cookies.
+      <a href="{{ url_for('privacy') }}" class="text-decoration-underline" style="color:#00BFA5;">Privacy Policy</a>
+    </p>
+    <button onclick="acceptCookies()" class="btn btn-sm btn-primary px-4" style="white-space:nowrap;">Got it</button>
+  </div>
+</div>
+
+<!-- NAVBAR -->
+<nav class="navbar navbar-expand-lg navbar-light sticky-top" id="mainNav">
+  <div class="container-fluid px-4">
+    <a class="navbar-brand d-flex align-items-center gap-2" href="{{ url_for('landing') }}">
+      <div class="brand-icon">G</div>
+      <span class="brand-text">GST<span class="brand-accent">Link</span></span>
+    </a>
+    <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+      {% if current_user.is_authenticated %}
+      <ul class="navbar-nav ms-auto align-items-lg-center gap-1">
+        <li class="nav-item"><a class="nav-link" href="{{ url_for('dashboard') }}"><i class="bi bi-grid me-1"></i>Dashboard</a></li>
+        <li class="nav-item"><a class="nav-link" href="{{ url_for('new_invoice') }}"><i class="bi bi-plus-circle me-1"></i>New Invoice</a></li>
+        <li class="nav-item"><a class="nav-link" href="{{ url_for('clients') }}"><i class="bi bi-people me-1"></i>Clients</a></li>
+        <li class="nav-item"><a class="nav-link" href="{{ url_for('compliance') }}"><i class="bi bi-shield-check me-1"></i>Compliance</a></li>
+        <li class="nav-item"><a class="nav-link" href="{{ url_for('analytics') }}"><i class="bi bi-bar-chart me-1"></i>Analytics</a></li>
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle d-flex align-items-center gap-2" href="#" data-bs-toggle="dropdown">
+            <div class="avatar-sm">{{ current_user.name[0].upper() }}</div>
+            <span class="d-none d-lg-inline">{{ current_user.name.split()[0] }}</span>
+            {% if current_user.plan_type == 'pro' %}<span class="badge-pro">PRO</span>{% elif current_user.is_trial_active %}<span class="badge bg-warning text-dark" style="font-size:0.65rem">TRIAL {{ current_user.trial_days_left }}d</span>{% endif %}
+          </a>
+          <ul class="dropdown-menu dropdown-menu-end">
+            <li><a class="dropdown-item" href="{{ url_for('profile') }}"><i class="bi bi-person me-2"></i>Profile</a></li>
+            <li><a class="dropdown-item" href="{{ url_for('change_password') }}"><i class="bi bi-shield-lock me-2"></i>Change Password</a></li>
+            <li><a class="dropdown-item" href="{{ url_for('invoice_history') }}"><i class="bi bi-receipt me-2"></i>All Invoices</a></li>
+            {% if not current_user.is_pro %}<li><a class="dropdown-item" href="{{ url_for('pricing') }}"><i class="bi bi-star me-2"></i>Upgrade to Pro</a></li>{% endif %}
+            <li><hr class="dropdown-divider"></li>
+            <li><a class="dropdown-item text-danger" href="{{ url_for('logout') }}"><i class="bi bi-box-arrow-right me-2"></i>Logout</a></li>
+          </ul>
+        </li>
+      </ul>
+      {% else %}
+      <ul class="navbar-nav ms-auto align-items-lg-center gap-2">
+        <li class="nav-item"><a class="nav-link" href="{{ url_for('pricing') }}">Pricing</a></li>
+        <li class="nav-item"><a class="nav-link" href="{{ url_for('login') }}">Login</a></li>
+        <li class="nav-item"><a class="btn btn-primary px-4" href="{{ url_for('register') }}">Start Free</a></li>
+      </ul>
+      {% endif %}
+    </div>
+  </div>
+</nav>
+
+<div class="flash-container">
+{% with messages = get_flashed_messages(with_categories=true) %}
+{% for cat, msg in messages %}
+<div class="alert alert-{{ 'danger' if cat == 'error' else cat }} alert-dismissible fade show mx-3 mt-2" role="alert">
+  {{ msg }}
+  <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+</div>
+{% endfor %}
+{% endwith %}
+</div>
+
+{% block content %}{% endblock %}
+
+<!-- FOOTER -->
+<footer class="footer-main mt-auto py-4">
+  <div class="container text-center">
+    <p class="mb-2"><strong>GST<span style="color:#00BFA5">Link</span></strong> — Built for Indian freelancers 🇮🇳</p>
+    <p class="small mb-3" style="color:rgba(255,255,255,.5)">GST-compliant invoicing · AI-powered · WhatsApp ready</p>
+    <div class="d-flex justify-content-center gap-4 flex-wrap">
+      <a href="{{ url_for('privacy') }}" class="small footer-link">Privacy Policy</a>
+      <a href="{{ url_for('terms') }}" class="small footer-link">Terms of Service</a>
+      <a href="mailto:support@gstlink.in" class="small footer-link">Support</a>
+    </div>
+  </div>
+</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/js/bootstrap.bundle.min.js"></script>
+<script src="{{ url_for('static', filename='js/main.js') }}"></script>
+
+<!-- COOKIE LOGIC -->
+<script>
+  (function() {
+    if (!localStorage.getItem('gstlink_cookies_accepted')) {
+      document.getElementById('cookieBanner').style.display = 'block';
+    }
+  })();
+  function acceptCookies() {
+    localStorage.setItem('gstlink_cookies_accepted', '1');
+    document.getElementById('cookieBanner').style.display = 'none';
+  }
+</script>
+
+{% block extra_js %}{% endblock %}
+</body>
+</html>

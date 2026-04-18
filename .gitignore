@@ -1,0 +1,43 @@
+# ── Environment & Secrets ────────────────────────────────────────
+.env
+*.env
+.env.*
+!.env.example
+
+# ── Python ───────────────────────────────────────────────────────
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.egg-info/
+dist/
+build/
+*.egg
+.eggs/
+
+# ── Virtual Environments ─────────────────────────────────────────
+venv/
+env/
+.venv/
+.env/
+
+# ── Database (local dev only — use Railway Postgres in prod) ─────
+*.db
+*.sqlite
+*.sqlite3
+
+# ── PDFs & User Uploads ──────────────────────────────────────────
+invoices_pdf/
+static/logo/
+
+# ── IDE & OS ─────────────────────────────────────────────────────
+.DS_Store
+.idea/
+.vscode/
+*.swp
+*.swo
+Thumbs.db
+
+# ── Logs ─────────────────────────────────────────────────────────
+*.log
+logs/

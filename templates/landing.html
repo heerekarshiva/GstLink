@@ -1,0 +1,257 @@
+{% extends "base.html" %}
+{% block title %}GSTLink – GST Invoice Generator for Indian Freelancers{% endblock %}
+{% block content %}
+
+<!-- HERO -->
+<section class="hero-section position-relative">
+  <div class="container position-relative">
+    <div class="row align-items-center g-5">
+      <div class="col-lg-6">
+        <div class="hero-badge"><i class="bi bi-patch-check-fill"></i> GST Compliant · Made in India 🇮🇳</div>
+        <h1 class="hero-title">Generate <span class="highlight">GST Invoices</span> in Seconds</h1>
+        <p class="hero-sub mt-3">The smartest invoice tool for Indian freelancers. Auto CGST/SGST/IGST, AI contract parser, WhatsApp share &amp; compliance reminders.</p>
+        <div class="d-flex flex-wrap gap-2 mt-3 mb-4">
+          <span class="feature-pill"><i class="bi bi-cpu"></i> AI Contract Parser</span>
+          <span class="feature-pill"><i class="bi bi-whatsapp"></i> WhatsApp Share</span>
+          <span class="feature-pill"><i class="bi bi-qr-code"></i> UPI QR Code</span>
+          <span class="feature-pill"><i class="bi bi-shield-check"></i> GST Compliant</span>
+        </div>
+        <div class="d-flex gap-3 flex-wrap">
+          <a href="{{ url_for('register') }}" class="btn btn-primary btn-lg px-5">Start Free — 5 Invoices</a>
+          <a href="#features" class="btn btn-outline-light btn-lg">See Features</a>
+        </div>
+        <p class="mt-3 small" style="opacity:.6">No credit card required · Free forever plan available</p>
+      </div>
+      <div class="col-lg-6">
+        <!-- Live Demo Invoice Card -->
+        <div class="card p-4 border-0" style="background:rgba(255,255,255,.06);backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,.12) !important;border-radius:16px;">
+          <div class="d-flex justify-content-between align-items-start mb-3">
+            <div>
+              <div class="fw-800 fs-4 text-white">GST<span style="color:#00BFA5">Link</span></div>
+              <div class="small" style="color:rgba(255,255,255,.5)">Tax Invoice</div>
+            </div>
+            <div class="text-end">
+              <div class="fw-700 text-white">#INV-2024-001</div>
+              <div class="small" style="color:rgba(255,255,255,.5)">{{ "today" | string }}</div>
+            </div>
+          </div>
+          <div class="d-flex justify-content-between mb-3">
+            <div style="background:rgba(0,137,123,.2);border-radius:8px;padding:10px 14px;flex:1;margin-right:8px;">
+              <div class="small" style="color:#00BFA5;font-weight:600;font-size:.7rem;text-transform:uppercase;">FROM</div>
+              <div class="text-white fw-600 small">Rahul Sharma</div>
+              <div style="color:rgba(255,255,255,.5);font-size:.75rem;">29AABCU9603R1ZX</div>
+            </div>
+            <div style="background:rgba(255,143,0,.15);border-radius:8px;padding:10px 14px;flex:1;margin-left:8px;">
+              <div class="small" style="color:#FF8F00;font-weight:600;font-size:.7rem;text-transform:uppercase;">TO</div>
+              <div class="text-white fw-600 small">Acme Corp Pvt Ltd</div>
+              <div style="color:rgba(255,255,255,.5);font-size:.75rem;">27AADCA1234F1Z5</div>
+            </div>
+          </div>
+          <div style="background:rgba(255,255,255,.05);border-radius:8px;padding:12px;margin-bottom:12px;">
+            <div class="d-flex justify-content-between small text-white mb-1">
+              <span style="opacity:.7">Web Development (SAC: 998312)</span><span>₹50,000</span>
+            </div>
+            <div class="d-flex justify-content-between small">
+              <span style="color:rgba(255,255,255,.5)">CGST @ 9%</span><span style="color:#00BFA5">₹4,500</span>
+            </div>
+            <div class="d-flex justify-content-between small">
+              <span style="color:rgba(255,255,255,.5)">SGST @ 9%</span><span style="color:#00BFA5">₹4,500</span>
+            </div>
+            <hr style="border-color:rgba(255,255,255,.1);margin:8px 0;">
+            <div class="d-flex justify-content-between fw-700 text-white">
+              <span>TOTAL</span><span>₹59,000</span>
+            </div>
+          </div>
+          <div class="d-flex gap-2">
+            <div style="flex:1;background:rgba(37,211,102,.15);border-radius:8px;padding:8px;text-align:center;">
+              <i class="bi bi-whatsapp" style="color:#25D366;font-size:1.2rem;"></i>
+              <div style="color:rgba(255,255,255,.6);font-size:.7rem;margin-top:2px;">WhatsApp</div>
+            </div>
+            <div style="flex:1;background:rgba(0,191,165,.15);border-radius:8px;padding:8px;text-align:center;">
+              <i class="bi bi-download" style="color:#00BFA5;font-size:1.2rem;"></i>
+              <div style="color:rgba(255,255,255,.6);font-size:.7rem;margin-top:2px;">Download PDF</div>
+            </div>
+            <div style="flex:1;background:rgba(255,255,255,.08);border-radius:8px;padding:8px;text-align:center;">
+              <i class="bi bi-qr-code" style="color:rgba(255,255,255,.7);font-size:1.2rem;"></i>
+              <div style="color:rgba(255,255,255,.6);font-size:.7rem;margin-top:2px;">UPI QR</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- STATS -->
+<section class="py-4 bg-white border-bottom">
+  <div class="container">
+    <div class="row text-center g-3">
+      <div class="col-6 col-md-3">
+        <div class="fw-800 fs-3 text-teal" style="color:var(--teal)">10,000+</div>
+        <div class="small text-muted">Invoices Generated</div>
+      </div>
+      <div class="col-6 col-md-3">
+        <div class="fw-800 fs-3" style="color:var(--teal)">₹50Cr+</div>
+        <div class="small text-muted">Amount Invoiced</div>
+      </div>
+      <div class="col-6 col-md-3">
+        <div class="fw-800 fs-3" style="color:var(--teal)">2,000+</div>
+        <div class="small text-muted">Freelancers Trust Us</div>
+      </div>
+      <div class="col-6 col-md-3">
+        <div class="fw-800 fs-3" style="color:var(--teal)">100%</div>
+        <div class="small text-muted">GST Compliant</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURES -->
+<section class="py-5" id="features">
+  <div class="container">
+    <div class="text-center mb-5">
+      <h2 class="fw-800 fs-1">Everything You Need to Invoice Like a Pro</h2>
+      <p class="text-muted">Designed specifically for Indian freelancers — developers, designers, consultants</p>
+    </div>
+    <div class="row g-4">
+      <div class="col-md-4">
+        <div class="feature-card">
+          <div class="feature-icon"><i class="bi bi-receipt-cutoff"></i></div>
+          <h5 class="fw-700">Auto GST Calculator</h5>
+          <p class="text-muted small">Automatically calculates CGST+SGST for intra-state and IGST for inter-state supplies. Just enter amount and we do the math.</p>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="feature-card">
+          <div class="feature-icon"><i class="bi bi-stars"></i></div>
+          <h5 class="fw-700">AI Contract Parser</h5>
+          <p class="text-muted small">Paste your contract and our AI extracts client name, GSTIN, amount and service description automatically. Powered by GPT.</p>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="feature-card">
+          <div class="feature-icon"><i class="bi bi-whatsapp"></i></div>
+          <h5 class="fw-700">WhatsApp Invoice Share</h5>
+          <p class="text-muted small">Send invoices directly via WhatsApp with a pre-filled professional message and direct download link. One click.</p>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="feature-card">
+          <div class="feature-icon"><i class="bi bi-qr-code-scan"></i></div>
+          <h5 class="fw-700">UPI QR Code</h5>
+          <p class="text-muted small">Every invoice includes a UPI QR code for instant payment via PhonePe, GPay, Paytm or any UPI app. No more chasing payments.</p>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="feature-card">
+          <div class="feature-icon"><i class="bi bi-calendar-check"></i></div>
+          <h5 class="fw-700">GST Compliance Reminders</h5>
+          <p class="text-muted small">Never miss GSTR-1 (11th) or GSTR-3B (20th) deadlines. Dashboard shows days remaining with your tax summary.</p>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="feature-card">
+          <div class="feature-icon"><i class="bi bi-file-earmark-pdf"></i></div>
+          <h5 class="fw-700">Professional PDF Invoices</h5>
+          <p class="text-muted small">Generate pixel-perfect, print-ready PDFs with your business details, GST breakup and amount in words — instantly downloadable.</p>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="feature-card">
+          <div class="feature-icon"><i class="bi bi-arrow-repeat"></i></div>
+          <h5 class="fw-700">Recurring Invoices</h5>
+          <p class="text-muted small">Schedule weekly or monthly invoices for retainer clients. GSTLink auto-generates them so you never forget to bill a regular client.</p>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="feature-card">
+          <div class="feature-icon"><i class="bi bi-palette2"></i></div>
+          <h5 class="fw-700">Custom Branding</h5>
+          <p class="text-muted small">Upload your logo and set brand colours. Every invoice you send looks uniquely yours — professional and memorable.</p>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="feature-card">
+          <div class="feature-icon"><i class="bi bi-graph-up-arrow"></i></div>
+          <h5 class="fw-700">Income &amp; Expense Tracker</h5>
+          <p class="text-muted small">Log expenses, track net income and see monthly P&amp;L at a glance. Know exactly how much you earned and spent each month.</p>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="feature-card">
+          <div class="feature-icon"><i class="bi bi-bell-fill"></i></div>
+          <h5 class="fw-700">Late Payment Reminders</h5>
+          <p class="text-muted small">Automatically send WhatsApp reminders to clients with overdue invoices. Polite, professional nudges that get you paid faster.</p>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="feature-card">
+          <div class="feature-icon"><i class="bi bi-currency-exchange"></i></div>
+          <h5 class="fw-700">Multi-Currency Invoices</h5>
+          <p class="text-muted small">Invoice overseas clients in USD, EUR, GBP or any major currency. Exchange rate is auto-applied so your GST stays in INR.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PRICING -->
+<section class="py-5 bg-white" id="pricing">
+  <div class="container">
+    <div class="text-center mb-5">
+      <h2 class="fw-800 fs-1">Simple, Transparent Pricing</h2>
+      <p class="text-muted">No hidden charges. Cancel anytime.</p>
+    </div>
+    <div class="row justify-content-center g-4 align-items-center">
+      <div class="col-md-4">
+        <div class="pricing-card">
+          <h4 class="fw-700">Free</h4>
+          <div class="my-3"><span class="price-currency">₹</span><span class="price-amount">0</span><span class="text-muted">/month</span></div>
+          <ul class="list-unstyled mb-4">
+            <li class="py-1"><i class="bi bi-check-circle-fill text-success me-2"></i>5 invoices/month</li>
+            <li class="py-1"><i class="bi bi-check-circle-fill text-success me-2"></i>GST auto-calculation</li>
+            <li class="py-1"><i class="bi bi-check-circle-fill text-success me-2"></i>PDF download</li>
+            <li class="py-1"><i class="bi bi-check-circle-fill text-success me-2"></i>WhatsApp share</li>
+            <li class="py-1 text-muted"><i class="bi bi-x-circle me-2"></i>AI Contract Parser</li>
+            <li class="py-1 text-muted"><i class="bi bi-x-circle me-2"></i>UPI QR Code</li>
+          </ul>
+          <a href="{{ url_for('register') }}" class="btn btn-outline-primary w-100">Start Free</a>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="pricing-card popular">
+          <span class="popular-badge">⭐ MOST POPULAR</span>
+          <h4 class="fw-700 text-white">Pro</h4>
+          <div class="my-3"><span class="price-currency" style="color:#00BFA5">₹</span><span class="price-amount" style="color:#00BFA5">199</span><span style="color:rgba(255,255,255,.5)">/month</span></div>
+          <ul class="list-unstyled mb-4">
+            <li class="py-1"><i class="bi bi-check-circle-fill me-2" style="color:#00BFA5"></i>Unlimited invoices</li>
+            <li class="py-1"><i class="bi bi-check-circle-fill me-2" style="color:#00BFA5"></i>AI Contract Parser</li>
+            <li class="py-1"><i class="bi bi-check-circle-fill me-2" style="color:#00BFA5"></i>UPI QR on every invoice</li>
+            <li class="py-1"><i class="bi bi-check-circle-fill me-2" style="color:#00BFA5"></i>Compliance reminders</li>
+            <li class="py-1"><i class="bi bi-check-circle-fill me-2" style="color:#00BFA5"></i>Client directory</li>
+            <li class="py-1"><i class="bi bi-check-circle-fill me-2" style="color:#00BFA5"></i>Priority support</li>
+            <li class="py-1"><i class="bi bi-check-circle-fill me-2" style="color:#00BFA5"></i>Recurring invoice scheduler</li>
+            <li class="py-1"><i class="bi bi-check-circle-fill me-2" style="color:#00BFA5"></i>Custom branding &amp; logo</li>
+            <li class="py-1"><i class="bi bi-check-circle-fill me-2" style="color:#00BFA5"></i>Income &amp; expense tracker</li>
+            <li class="py-1"><i class="bi bi-check-circle-fill me-2" style="color:#00BFA5"></i>GSTR-1 &amp; GSTR-3B export</li>
+            <li class="py-1"><i class="bi bi-check-circle-fill me-2" style="color:#00BFA5"></i>Late payment reminders (WhatsApp)</li>
+            <li class="py-1"><i class="bi bi-check-circle-fill me-2" style="color:#00BFA5"></i>Multi-currency invoices</li>
+          </ul>
+          <a href="{{ url_for('register') }}" class="btn btn-primary w-100" style="background:linear-gradient(135deg,#00897B,#00BFA5)">Start Pro Trial</a>
+          <p class="text-center mt-2 small" style="color:rgba(255,255,255,.5)">30-day free trial</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="py-5" style="background:linear-gradient(135deg,var(--dark),#0a3d62)">
+  <div class="container text-center text-white">
+    <h2 class="fw-800 fs-1 mb-3">Ready to Invoice Smarter?</h2>
+    <p class="mb-4 opacity-75">Join 2,000+ Indian freelancers who invoice professionally with GSTLink</p>
+    <a href="{{ url_for('register') }}" class="btn btn-primary btn-lg px-5">Get Started Free <i class="bi bi-arrow-right ms-2"></i></a>
+  </div>
+</section>
+
+{% endblock %}
