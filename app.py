@@ -176,9 +176,9 @@ def register():
             name=name, email=email,
             password=generate_password_hash(password),
             gstin=gstin,
-            plan_type='trial',
+            plan_type='pro',
             trial_started_at=datetime.utcnow(),
-            trial_ends_at=trial_end,
+            trial_ends_at=None,
             daily_invoice_count=0,
             daily_reset_date=date.today(),
             email_verified=False,
@@ -534,12 +534,7 @@ def delete_client(cid):
 def new_invoice():
     _sync_user_state(current_user)
 
-    if not current_user.can_create_invoice(daily_limit=app.config['DAILY_FREE_LIMIT']):
-        if current_user.plan_type == 'trial':
-            flash('Your 30-day free trial has ended. Upgrade to Pro to keep creating invoices.', 'warning')
-        else:
-            flash(f'You\'ve used all {app.config["DAILY_FREE_LIMIT"]} free invoices for today. Upgrade to Pro for unlimited!', 'warning')
-        return redirect(url_for('pricing'))
+    # All users have unlimited invoices (free forever)
 
     clients = Client.query.filter_by(user_id=current_user.id).all()
 
@@ -751,9 +746,7 @@ def invoice_history():
 def duplicate_invoice(invoice_id):
     """One-click duplicate — creates a new draft pre-filled from an existing invoice."""
     _sync_user_state(current_user)
-    if not current_user.can_create_invoice(daily_limit=app.config['DAILY_FREE_LIMIT']):
-        flash('Daily invoice limit reached. Upgrade to Pro for unlimited invoices.', 'warning')
-        return redirect(url_for('pricing'))
+    # All users have unlimited invoices (free forever)
 
     src = Invoice.query.filter_by(id=invoice_id, user_id=current_user.id).first_or_404()
     invoice_no = generate_invoice_number(current_user.id)
