@@ -56,7 +56,7 @@ class User(UserMixin, db.Model):
 
     @property
     def is_pro(self):
-        return self.plan_type == 'pro'
+        return True  # Everyone gets Pro features for free
 
     @property
     def trial_days_left(self):
@@ -84,12 +84,7 @@ class User(UserMixin, db.Model):
 
     def can_create_invoice(self, daily_limit=5):
         """True if user is allowed to create another invoice."""
-        if self.is_pro:
-            return True
-        if self.is_trial_active:
-            return True
-        # Free plan: N per day
-        return self.get_daily_count() < daily_limit
+        return True  # All users get unlimited invoices for free
 
 
 class Client(db.Model):
