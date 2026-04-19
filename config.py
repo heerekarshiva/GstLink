@@ -50,8 +50,8 @@ class Config:
     # Set BASE_URL to your deployed domain, e.g. https://gstlink.in
     BASE_URL = os.environ.get('BASE_URL', 'http://localhost:5000')
 
-    FREE_INVOICE_LIMIT = 5       # legacy total limit (kept for reference)
-    DAILY_FREE_LIMIT = 5          # free plan: 5 invoices per day
+    FREE_INVOICE_LIMIT = 999999   # unlimited (free forever)
+    DAILY_FREE_LIMIT = 999999     # unlimited (free forever)
     TRIAL_DAYS = 30               # 30-day full-featured trial for new signups
     PRO_PRICE_INR = 199
 
