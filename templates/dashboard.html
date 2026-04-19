@@ -22,32 +22,7 @@
   </div>
   {% endif %}
 
-  <!-- Plan status banner -->
-  {% if current_user.is_trial_active %}
-  <div class="card mb-4" style="background:linear-gradient(135deg,#1a1a2e,#1c2a1a);border:1px solid rgba(255,143,0,.4);">
-    <div class="card-body py-3 px-4">
-      <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
-        <span class="fw-600 small text-white"><i class="bi bi-gift-fill me-2" style="color:#FFB300;"></i>Free Trial — <strong style="color:#FFB300;">{{ current_user.trial_days_left }} days left</strong> · Unlimited invoices active</span>
-        <a href="{{ url_for('pricing') }}" class="btn btn-sm fw-600" style="background:linear-gradient(135deg,#FF8F00,#FFB300);color:#fff;border:none;">Upgrade to Pro</a>
-      </div>
-      <div class="limit-bar mt-2">
-        <div class="limit-bar-fill" style="width:{{ [((30 - current_user.trial_days_left) / 30 * 100), 100]|min }}%;background:linear-gradient(90deg,#FF8F00,#FFB300);"></div>
-      </div>
-    </div>
-  </div>
-  {% elif current_user.plan_type == 'free' %}
-  <div class="card mb-4 border-warning" style="background:#fffdf0;">
-    <div class="card-body py-3 px-4">
-      <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
-        <span class="fw-600 small"><i class="bi bi-lightning me-1 text-warning"></i>Free Plan — <strong>{{ daily_count }}/{{ daily_limit }}</strong> invoices used today · Resets midnight</span>
-        <a href="{{ url_for('pricing') }}" class="btn btn-warning btn-sm fw-600">Upgrade to Pro ₹199/mo</a>
-      </div>
-      <div class="limit-bar mt-2">
-        <div class="limit-bar-fill" style="width:{{ [(daily_count / daily_limit * 100), 100]|min }}%;background:{% if daily_count >= daily_limit %}#e53e3e{% else %}linear-gradient(90deg,var(--teal),var(--teal-light)){% endif %};"></div>
-      </div>
-    </div>
-  </div>
-  {% endif %}
+  <!-- All users have unlimited invoices - no plan banner needed -->
 
   <!-- Stats -->
   <div class="row g-3 mb-4">
