@@ -89,7 +89,9 @@ function setupContractParser() {
       const data = await res.json();
       if (data.error && !data.client_name) { alert('Parse error: ' + data.error); return; }
 
-      // Fill form fields
+      // Fill form fields - FIXED: Added client_name and client_gstin field mapping
+      if (data.client_name) setVal('client_name', data.client_name);
+      if (data.client_gstin) setVal('client_gstin', data.client_gstin);
       if (data.amount) setVal('amount', data.amount);
       if (data.description) setVal('description', data.description);
       if (data.hsn_sac) setVal('hsn_sac', data.hsn_sac);
@@ -105,6 +107,7 @@ function setupContractParser() {
       document.getElementById('amount')?.dispatchEvent(new Event('input'));
 
     } catch(e) {
+      console.error('AI parse error:', e);
       alert('Failed to parse contract. Please try again or check your Groq API key.');
     } finally {
       btn.disabled = false;
@@ -142,7 +145,7 @@ function setupInvoiceActions() {
       const client   = btn.dataset.client  || '';
       const link     = btn.dataset.link    || '';
       const msg = encodeURIComponent(
-        `Hi ${client},\n\nPlease find your invoice *${invoiceNo}* for ₹${total}.\n\nView & download: ${link}\n\n_Sent via GSTLink_`
+        `Hi ${client},\\n\\nPlease find your invoice *${invoiceNo}* for ₹${total}.\\n\\nView & download: ${link}\\n\\n_Sent via GSTLink_`
       );
       window.open(`https://wa.me/?text=${msg}`, '_blank');
     }
