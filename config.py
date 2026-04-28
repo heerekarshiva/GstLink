@@ -11,14 +11,14 @@ class Config:
     # IMPORTANT: Set SECRET_KEY as an environment variable in production.
     # Never use the fallback value in production — it is only for local dev.
     _secret = os.environ.get('SECRET_KEY')
-    if not _secret:
+    if not _secret or _secret == 'your-super-secret-key-change-this-before-deploying':
         import sys
-        if 'gunicorn' in sys.argv[0] or os.environ.get('RAILWAY_ENVIRONMENT'):
+        if 'gunicorn' in sys.argv[0] or os.environ.get('RAILWAY_ENVIRONMENT') or os.environ.get('RENDER'):
             raise RuntimeError(
-                "SECRET_KEY environment variable is not set. "
-                "Set it in Railway Variables before deploying."
+                "SECRET_KEY is not set or is using the default placeholder. "
+                "Set a strong random SECRET_KEY in your Render environment variables."
             )
-        # Local dev only — generate a random key (sessions won't persist across restarts)
+        # Local dev only
         _secret = secrets.token_hex(32)
     SECRET_KEY = _secret
 
@@ -50,8 +50,8 @@ class Config:
     # Set BASE_URL to your deployed domain, e.g. https://gstlink.in
     BASE_URL = os.environ.get('BASE_URL', 'http://localhost:5000')
 
-    FREE_INVOICE_LIMIT = 999999   # unlimited (free forever)
-    DAILY_FREE_LIMIT = 999999     # unlimited (free forever)
+    FREE_INVOICE_LIMIT = 5       # legacy total limit (kept for reference)
+    DAILY_FREE_LIMIT = 5          # free plan: 5 invoices per day
     TRIAL_DAYS = 30               # 30-day full-featured trial for new signups
     PRO_PRICE_INR = 199
 
@@ -59,10 +59,10 @@ class Config:
     # Prevent JS from accessing session cookies (XSS mitigation)
     SESSION_COOKIE_HTTPONLY = True
     # Only send cookies over HTTPS (Railway serves HTTPS; harmless in local dev)
-    SESSION_COOKIE_SECURE   = True
+    SESSION_COOKIE_SECURE   = bool(os.environ.get('RENDER') or os.environ.get('RAILWAY_ENVIRONMENT'))
     # Strict same-site policy — extra CSRF layer on top of Flask-WTF tokens
     SESSION_COOKIE_SAMESITE = 'Lax'
     # Remember-me cookie hardening
-    REMEMBER_COOKIE_SECURE   = True
+    REMEMBER_COOKIE_SECURE   = bool(os.environ.get('RENDER') or os.environ.get('RAILWAY_ENVIRONMENT'))
     REMEMBER_COOKIE_HTTPONLY = True
     REMEMBER_COOKIE_DURATION = timedelta(days=30)
