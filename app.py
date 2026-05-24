@@ -24,11 +24,6 @@ app.config.from_object(Config)
 db.init_app(app)
 mail.init_app(app)
 
-# ── Admin Dashboard ───────────────────────────────────────────────
-from admin import admin_bp
-app.register_blueprint(admin_bp)
-# ─────────────────────────────────────────────────────────────────
-
 # ── CSRF Protection ───────────────────────────────────────────────
 csrf = CSRFProtect(app)
 
