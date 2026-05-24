@@ -13,7 +13,6 @@ from datetime import datetime, date, timedelta
 from database.models import db, User, Client, Invoice
 from utils.gst_calculator import (calculate_gst, validate_gstin, get_state_from_gstin,
                                    INDIAN_STATES, COMMON_HSN_SAC, GST_RATES)
-from utils.ai_contract_parser import parse_contract_with_ai
 from utils.invoice_generator import generate_invoice_pdf
 from utils.mailer import mail, send_verification_email, send_password_reset_email, send_password_changed_email
 from config import Config
@@ -882,21 +881,6 @@ def analytics():
 # ──────────────────────────────────────────────────────────────────
 # AI CONTRACT PARSER
 # ──────────────────────────────────────────────────────────────────
-
-@app.route('/ai/parse-contract', methods=['POST'])
-@login_required
-@limiter.limit("30 per hour")
-def parse_contract():
-    # Use silent=True so non-JSON bodies return None instead of raising 400
-    data = request.get_json(silent=True) or {}
-    contract_text = data.get('text', '')
-    if not contract_text or len(contract_text) < 20:
-        return jsonify({'error': 'Please paste a longer contract text.'}), 400
-    if len(contract_text) > 10000:
-        return jsonify({'error': 'Contract text too long (max 10,000 characters).'}), 400
-    result = parse_contract_with_ai(contract_text)
-    result.pop('error', None)  # never expose internal errors to the client
-    return jsonify(result)
 
 
 # ──────────────────────────────────────────────────────────────────
