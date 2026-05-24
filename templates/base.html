@@ -6,7 +6,7 @@
 
 <!-- PRIMARY META -->
 <title>{% block title %}GSTLink – GST Invoice Generator{% endblock %}</title>
-<meta name="description" content="{% block meta_description %}Generate GST-compliant invoices in seconds. Auto CGST/SGST/IGST, AI contract parser, WhatsApp share & UPI QR. Built for Indian freelancers.{% endblock %}"/>
+<meta name="description" content="{% block meta_description %}Generate GST-compliant invoices in seconds. Auto CGST/SGST/IGST, WhatsApp share & UPI QR. Built for Indian freelancers.{% endblock %}"/>
 <meta name="keywords" content="GST invoice generator, Indian freelancer invoicing, CGST SGST IGST calculator, GST billing software, freelance invoice India"/>
 <meta name="author" content="GSTLink"/>
 <link rel="canonical" href="{{ config.BASE_URL }}{{ request.path }}"/>
@@ -15,7 +15,7 @@
 <meta property="og:type" content="website"/>
 <meta property="og:url" content="{{ config.BASE_URL }}{{ request.path }}"/>
 <meta property="og:title" content="{% block og_title %}GSTLink – GST Invoice Generator for Indian Freelancers{% endblock %}"/>
-<meta property="og:description" content="{% block og_description %}Generate GST-compliant invoices in seconds. Auto CGST/SGST/IGST, AI contract parser, WhatsApp share & UPI QR. Free plan available.{% endblock %}"/>
+<meta property="og:description" content="{% block og_description %}Generate GST-compliant invoices in seconds. Auto CGST/SGST/IGST, WhatsApp share & UPI QR. Free plan available.{% endblock %}"/>
 <meta property="og:image" content="{{ config.BASE_URL }}/static/img/og-image.png"/>
 <meta property="og:image:width" content="1200"/>
 <meta property="og:image:height" content="630"/>
@@ -115,7 +115,7 @@
 <footer class="footer-main mt-auto py-4">
   <div class="container text-center">
     <p class="mb-2"><strong>GST<span style="color:#00BFA5">Link</span></strong> — Built for Indian freelancers 🇮🇳</p>
-    <p class="small mb-3" style="color:rgba(255,255,255,.5)">GST-compliant invoicing · AI-powered · WhatsApp ready</p>
+    <p class="small mb-3" style="color:rgba(255,255,255,.5)">GST-compliant invoicing · WhatsApp ready</p>
     <div class="d-flex justify-content-center gap-4 flex-wrap">
       <a href="{{ url_for('privacy') }}" class="small footer-link">Privacy Policy</a>
       <a href="{{ url_for('terms') }}" class="small footer-link">Terms of Service</a>
