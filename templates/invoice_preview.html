@@ -1,0 +1,199 @@
+{% extends "base.html" %}
+{% block title %}Invoice {{ invoice.invoice_number }}{% endblock %}
+{% block content %}
+<div class="container-fluid px-4 py-4">
+<div class="row justify-content-center">
+<div class="col-xl-9">
+
+<div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+  <div class="d-flex align-items-center gap-3">
+    <a href="{{ url_for('invoice_history') }}" class="btn btn-ghost btn-sm"><i class="bi bi-arrow-left"></i></a>
+    <div>
+      <h4 class="fw-bold mb-0">{{ invoice.invoice_number }}</h4>
+      <p class="text-muted small mb-0">Created {{ invoice.created_at.strftime('%d %b %Y') }}</p>
+    </div>
+  </div>
+  <div class="d-flex gap-2 flex-wrap">
+    <a href="{{ url_for('download_invoice', invoice_id=invoice.id) }}" class="btn btn-outline-primary">
+      <i class="bi bi-download me-1"></i>Download PDF
+    </a>
+    <a href="https://wa.me/?text={{ whatsapp_msg }}" target="_blank" class="btn btn-whatsapp">
+      <i class="bi bi-whatsapp me-1"></i>Send via WhatsApp
+    </a>
+  </div>
+</div>
+
+<div class="row g-4">
+  <div class="col-md-8">
+    <!-- Invoice Preview Card -->
+    <div class="invoice-preview-card">
+      <!-- Header -->
+      <div class="inv-header">
+        <div class="d-flex justify-content-between align-items-start">
+          <div>
+            <div class="inv-brand">⚡ GSTLink</div>
+            <div class="text-muted small">GST Invoice Generator</div>
+          </div>
+          <div class="text-end">
+            <div class="inv-title">TAX INVOICE</div>
+            <div class="font-mono fw-bold">{{ invoice.invoice_number }}</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Parties -->
+      <div class="inv-parties">
+        <div class="row g-3">
+          <div class="col-6">
+            <div class="inv-party-label">FROM</div>
+            <div class="fw-bold">{{ user.name }}</div>
+            <div class="small text-muted">{{ user.address or '' }}</div>
+            {% if user.gstin %}<div class="small font-mono">GSTIN: {{ user.gstin }}</div>{% endif %}
+            {% if user.state %}<div class="small text-muted">{{ user.state }} ({{ user.state_code }})</div>{% endif %}
+          </div>
+          <div class="col-6">
+            <div class="inv-party-label">BILL TO</div>
+            <div class="fw-bold">{{ client.client_name }}</div>
+            <div class="small text-muted">{{ client.address or '' }}</div>
+            {% if client.client_gstin %}<div class="small font-mono">GSTIN: {{ client.client_gstin }}</div>{% endif %}
+            {% if client.state %}<div class="small text-muted">{{ client.state }} ({{ client.state_code }})</div>{% endif %}
+          </div>
+        </div>
+        <div class="row g-2 mt-2">
+          <div class="col-6 col-md-3"><div class="text-muted small">Invoice Date</div><div class="fw-semibold">{{ invoice.invoice_date.strftime('%d %b %Y') }}</div></div>
+          <div class="col-6 col-md-3"><div class="text-muted small">Due Date</div><div class="fw-semibold">{{ invoice.due_date.strftime('%d %b %Y') if invoice.due_date else 'On Receipt' }}</div></div>
+          <div class="col-6 col-md-3"><div class="text-muted small">GST Type</div><div class="fw-semibold">{{ invoice.gst_type.replace('_', '+') }}</div></div>
+          <div class="col-6 col-md-3"><div class="text-muted small">Status</div>
+            <span class="status-badge status-{{ invoice.payment_status }}">{{ invoice.payment_status.title() }}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Line Items -->
+      <div class="inv-items">
+        <table class="table inv-table">
+          <thead>
+            <tr><th>#</th><th>Description</th><th>HSN/SAC</th><th>Qty</th><th>Rate</th><th class="text-end">Amount</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>1</td>
+              <td>{{ invoice.description }}</td>
+              <td class="font-mono">{{ invoice.hsn_sac or '—' }}</td>
+              <td>{{ invoice.quantity }}</td>
+              <td>₹{{ "{:,.2f}".format(invoice.rate) }}</td>
+              <td class="text-end fw-semibold">₹{{ "{:,.2f}".format(invoice.amount) }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Totals -->
+      <div class="inv-totals">
+        <div class="d-flex justify-content-end">
+          <div class="totals-box">
+            <div class="d-flex justify-content-between gap-4 mb-1">
+              <span class="text-muted">Sub Total</span><span>₹{{ "{:,.2f}".format(invoice.amount) }}</span>
+            </div>
+            {% if invoice.gst_type == 'CGST_SGST' %}
+            <div class="d-flex justify-content-between gap-4 mb-1">
+              <span class="text-muted">CGST @ {{ invoice.gst_rate/2 }}%</span><span>₹{{ "{:,.2f}".format(invoice.cgst) }}</span>
+            </div>
+            <div class="d-flex justify-content-between gap-4 mb-1">
+              <span class="text-muted">SGST @ {{ invoice.gst_rate/2 }}%</span><span>₹{{ "{:,.2f}".format(invoice.sgst) }}</span>
+            </div>
+            {% else %}
+            <div class="d-flex justify-content-between gap-4 mb-1">
+              <span class="text-muted">IGST @ {{ invoice.gst_rate }}%</span><span>₹{{ "{:,.2f}".format(invoice.igst) }}</span>
+            </div>
+            {% endif %}
+            <hr class="my-2">
+            <div class="d-flex justify-content-between gap-4">
+              <span class="fw-bold">Total</span>
+              <span class="fw-bold text-primary fs-5">₹{{ "{:,.2f}".format(invoice.total) }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {% if user.bank_name or user.upi_id %}
+      <div class="inv-payment-details">
+        <div class="fw-semibold mb-1">Payment Details</div>
+        {% if user.bank_name %}<div class="small">Bank: {{ user.bank_name }} · A/C: {{ user.account_number }} · IFSC: {{ user.ifsc_code }}</div>{% endif %}
+        {% if user.upi_id %}<div class="small">UPI: {{ user.upi_id }}</div>{% endif %}
+      </div>
+      {% endif %}
+
+      {% if invoice.notes %}
+      <div class="inv-notes"><strong>Notes:</strong> {{ invoice.notes }}</div>
+      {% endif %}
+      
+      <div class="inv-footer text-center text-muted small py-3">
+        Computer-generated invoice. No signature required. · Generated by GSTLink
+      </div>
+    </div>
+  </div>
+
+  <!-- Right Panel -->
+  <div class="col-md-4">
+    <!-- Status -->
+    <div class="card-glass mb-3">
+      <h6 class="fw-bold mb-3">Update Status</h6>
+      <form method="POST" action="{{ url_for('update_invoice_status', invoice_id=invoice.id) }}">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <div class="d-grid gap-2">
+          {% for status in ['pending', 'paid', 'overdue'] %}
+          <button type="submit" name="status" value="{{ status }}" 
+            class="btn btn-sm {{ 'btn-success' if invoice.payment_status == status else 'btn-outline-secondary' }}">
+            {% if status == 'paid' %}✅{% elif status == 'pending' %}⏳{% else %}⚠️{% endif %} Mark {{ status.title() }}
+          </button>
+          {% endfor %}
+        </div>
+      </form>
+    </div>
+
+    <!-- Share -->
+    <div class="card-glass mb-3">
+      <h6 class="fw-bold mb-3">Share Invoice</h6>
+      <div class="mb-2">
+        <label class="form-label small text-muted">Invoice Link</label>
+        <div class="input-group input-group-sm">
+          <input type="text" class="form-control font-mono" id="inv-link" value="{{ base_url }}/invoice/view/{{ invoice.public_token }}" readonly>
+          <button class="btn btn-outline-secondary" onclick="copyLink()"><i class="bi bi-copy"></i></button>
+        </div>
+      </div>
+      <a href="https://wa.me/?text={{ whatsapp_msg }}" target="_blank" class="btn btn-whatsapp w-100">
+        <i class="bi bi-whatsapp me-2"></i>Send via WhatsApp
+      </a>
+    </div>
+
+    <!-- Danger Zone -->
+    <div class="card-glass border border-danger-subtle">
+      <h6 class="fw-bold text-danger mb-3">Danger Zone</h6>
+      <form method="POST" action="{{ url_for('delete_invoice', invoice_id=invoice.id) }}" onsubmit="return confirm('Delete this invoice permanently?')">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <button type="submit" class="btn btn-outline-danger btn-sm w-100">
+          <i class="bi bi-trash me-1"></i>Delete Invoice
+        </button>
+      </form>
+    </div>
+  </div>
+</div>
+
+</div>
+</div>
+</div>
+{% endblock %}
+{% block extra_js %}
+<script>
+function copyLink() {
+  const el = document.getElementById('inv-link');
+  el.select();
+  navigator.clipboard.writeText(el.value).then(() => {
+    const btn = el.nextElementSibling;
+    btn.innerHTML = '<i class="bi bi-check"></i>';
+    setTimeout(() => btn.innerHTML = '<i class="bi bi-copy"></i>', 2000);
+  });
+}
+</script>
+{% endblock %}

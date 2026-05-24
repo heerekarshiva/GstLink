@@ -1,0 +1,125 @@
+{% extends "base.html" %}
+{% block title %}GST Compliance – GSTLink{% endblock %}
+{% block content %}
+<div class="container py-4">
+  <div class="page-header">
+    <h4 class="page-title"><i class="bi bi-shield-check me-2" style="color:var(--teal)"></i>GST Compliance Dashboard</h4>
+  </div>
+
+  <div class="row g-4">
+    <!-- Filing Deadlines -->
+    <div class="col-lg-4">
+      <div class="card h-100">
+        <div class="card-header fw-700">📅 Filing Deadlines</div>
+        <div class="card-body">
+          {% set current_month = today.strftime('%B %Y') %}
+          <div class="p-3 rounded mb-3" style="background:var(--teal-pale);border:2px solid var(--teal)">
+            <div class="d-flex justify-content-between">
+              <div>
+                <div class="fw-700">GSTR-1</div>
+                <div class="small text-muted">Outward supplies</div>
+                <div class="small fw-600 mt-1" style="color:var(--teal)">Every 11th of next month</div>
+              </div>
+              <div class="text-center">
+                <div class="fw-800 fs-2" style="color:var(--teal)">11</div>
+                <div class="small text-muted">Monthly</div>
+              </div>
+            </div>
+          </div>
+          <div class="p-3 rounded mb-3" style="background:#fff8f0;border:2px solid #dd6b20">
+            <div class="d-flex justify-content-between">
+              <div>
+                <div class="fw-700">GSTR-3B</div>
+                <div class="small text-muted">Summary return</div>
+                <div class="small fw-600 mt-1" style="color:#dd6b20">Every 20th of next month</div>
+              </div>
+              <div class="text-center">
+                <div class="fw-800 fs-2" style="color:#dd6b20">20</div>
+                <div class="small text-muted">Monthly</div>
+              </div>
+            </div>
+          </div>
+          <div class="p-3 rounded" style="background:#ebf4ff;border:2px solid #3182ce">
+            <div class="fw-700 small">💡 Filing Tips</div>
+            <ul class="small text-muted mb-0 mt-2 ps-3">
+              <li>Keep all invoices reconciled monthly</li>
+              <li>Cross-check with purchase register</li>
+              <li>File before deadline to avoid ₹50/day penalty</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tax Summary -->
+    <div class="col-lg-8">
+      <div class="card mb-4">
+        <div class="card-header fw-700">📊 Lifetime Tax Summary</div>
+        <div class="card-body">
+          <div class="row g-3">
+            <div class="col-md-3">
+              <div class="stat-card text-center">
+                <div class="stat-label">Taxable Value</div>
+                <div class="fw-800 fs-4" style="color:var(--teal)">₹{{ "%.0f"|format(total_taxable) }}</div>
+              </div>
+            </div>
+            <div class="col-md-3">
+              <div class="stat-card text-center">
+                <div class="stat-label">CGST Collected</div>
+                <div class="fw-800 fs-4" style="color:#3182ce">₹{{ "%.0f"|format(total_cgst) }}</div>
+              </div>
+            </div>
+            <div class="col-md-3">
+              <div class="stat-card text-center">
+                <div class="stat-label">SGST Collected</div>
+                <div class="fw-800 fs-4" style="color:#805ad5">₹{{ "%.0f"|format(total_sgst) }}</div>
+              </div>
+            </div>
+            <div class="col-md-3">
+              <div class="stat-card text-center">
+                <div class="stat-label">IGST Collected</div>
+                <div class="fw-800 fs-4" style="color:#dd6b20">₹{{ "%.0f"|format(total_igst) }}</div>
+              </div>
+            </div>
+          </div>
+          <div class="alert alert-info mt-3 small mb-0">
+            <i class="bi bi-info-circle me-1"></i>
+            <strong>Total GST Liability: ₹{{ "%.2f"|format(total_cgst + total_sgst + total_igst) }}</strong> — This is the amount you need to remit to the government.
+          </div>
+        </div>
+      </div>
+
+      <!-- Invoice Breakup Table -->
+      <div class="card">
+        <div class="card-header fw-700">📋 Invoice-wise GST Breakup</div>
+        <div class="card-body p-0">
+          {% if invoices %}
+          <div class="table-responsive">
+            <table class="table table-sm table-hover mb-0">
+              <thead><tr>
+                <th>Invoice</th><th>Client</th><th>Taxable</th><th>CGST</th><th>SGST</th><th>IGST</th><th>Total GST</th>
+              </tr></thead>
+              <tbody>
+                {% for inv in invoices %}
+                <tr>
+                  <td><span class="mono small" style="color:var(--teal)">{{ inv.invoice_number }}</span></td>
+                  <td class="small">{{ inv.client.client_name }}</td>
+                  <td>₹{{ "%.0f"|format(inv.amount) }}</td>
+                  <td style="color:#3182ce">{{ '₹%.0f'|format(inv.cgst) if inv.cgst else '—' }}</td>
+                  <td style="color:#805ad5">{{ '₹%.0f'|format(inv.sgst) if inv.sgst else '—' }}</td>
+                  <td style="color:#dd6b20">{{ '₹%.0f'|format(inv.igst) if inv.igst else '—' }}</td>
+                  <td class="fw-600">₹{{ "%.0f"|format(inv.cgst + inv.sgst + inv.igst) }}</td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+          {% else %}
+          <div class="empty-state"><i class="bi bi-table"></i><h5>No invoices yet</h5></div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

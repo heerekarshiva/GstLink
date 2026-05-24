@@ -1,0 +1,154 @@
+{% extends "base.html" %}
+{% block title %}Analytics – GSTLink{% endblock %}
+{% block content %}
+<div class="container-fluid px-4 py-4">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+      <h4 class="fw-800 mb-0"><i class="bi bi-bar-chart me-2" style="color:var(--teal)"></i>Revenue Analytics</h4>
+      <p class="text-muted small mb-0">Your invoicing performance at a glance</p>
+    </div>
+    <a href="{{ url_for('new_invoice') }}" class="btn btn-primary">
+      <i class="bi bi-plus-lg me-2"></i>New Invoice
+    </a>
+  </div>
+
+  <!-- Summary Cards -->
+  <div class="row g-3 mb-4">
+    <div class="col-6 col-md-3">
+      <div class="card p-3 text-center">
+        <div class="small text-muted mb-1">Total Invoiced</div>
+        <div class="fw-800 fs-4" style="color:var(--teal)">₹{{ "{:,.0f}".format(total) }}</div>
+        <div class="small text-muted">{{ invoice_count }} invoice{{ 's' if invoice_count != 1 }}</div>
+      </div>
+    </div>
+    <div class="col-6 col-md-3">
+      <div class="card p-3 text-center">
+        <div class="small text-muted mb-1">Paid</div>
+        <div class="fw-800 fs-4 text-success">₹{{ "{:,.0f}".format(paid) }}</div>
+        <div class="small text-muted">{{ "%.0f"|format((paid/total*100) if total else 0) }}% collected</div>
+      </div>
+    </div>
+    <div class="col-6 col-md-3">
+      <div class="card p-3 text-center">
+        <div class="small text-muted mb-1">Unpaid</div>
+        <div class="fw-800 fs-4 text-danger">₹{{ "{:,.0f}".format(unpaid) }}</div>
+        <div class="small text-muted">Awaiting payment</div>
+      </div>
+    </div>
+    <div class="col-6 col-md-3">
+      <div class="card p-3 text-center border-danger">
+        <div class="small text-muted mb-1">Overdue</div>
+        <div class="fw-800 fs-4 text-danger">{{ overdue|length }}</div>
+        <div class="small text-muted">Past due date</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row g-4">
+    <!-- Monthly Revenue Chart -->
+    <div class="col-md-8">
+      <div class="card p-4">
+        <h6 class="fw-700 mb-3">Monthly Revenue</h6>
+        {% if monthly %}
+        <div id="monthlyChart" style="height:260px;position:relative;">
+          {% set max_val = monthly.values()|list|max %}
+          <div class="d-flex align-items-end gap-2" style="height:220px;">
+            {% for month, amount in monthly.items() %}
+            <div class="d-flex flex-column align-items-center flex-fill">
+              <div class="small text-muted mb-1" style="font-size:0.7rem;">₹{{ "{:,.0f}".format(amount) }}</div>
+              <div class="rounded-top" style="
+                  width:100%;
+                  height:{{ [(amount / max_val * 180)|int, 4]|max }}px;
+                  background:linear-gradient(180deg,var(--teal),#00695C);
+                  transition:height .3s;">
+              </div>
+              <div class="small text-muted mt-1" style="font-size:0.7rem;white-space:nowrap;">{{ month }}</div>
+            </div>
+            {% endfor %}
+          </div>
+        </div>
+        {% else %}
+        <div class="text-center py-5 text-muted">
+          <i class="bi bi-bar-chart" style="font-size:2rem;opacity:.3;"></i>
+          <p class="mt-2 small">No invoice data yet. Create your first invoice to see analytics.</p>
+        </div>
+        {% endif %}
+      </div>
+    </div>
+
+    <!-- Top Clients -->
+    <div class="col-md-4">
+      <div class="card p-4 h-100">
+        <h6 class="fw-700 mb-3">Top Clients by Revenue</h6>
+        {% if top_clients %}
+        {% set max_client_rev = top_clients[0][1] %}
+        {% for name, rev in top_clients %}
+        <div class="mb-3">
+          <div class="d-flex justify-content-between small mb-1">
+            <span class="fw-600 text-truncate" style="max-width:60%;">{{ name }}</span>
+            <span class="text-muted">₹{{ "{:,.0f}".format(rev) }}</span>
+          </div>
+          <div class="progress" style="height:6px;border-radius:4px;">
+            <div class="progress-bar" role="progressbar"
+                 style="width:{{ (rev/max_client_rev*100)|int }}%;background:var(--teal);">
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+        {% else %}
+        <div class="text-center py-4 text-muted small">No client data yet.</div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  <!-- Overdue Invoices -->
+  {% if overdue %}
+  <div class="card mt-4 border-danger">
+    <div class="card-header bg-danger text-white fw-700">
+      <i class="bi bi-exclamation-triangle me-2"></i>Overdue Invoices ({{ overdue|length }})
+    </div>
+    <div class="card-body p-0">
+      <table class="table table-hover mb-0">
+        <thead class="table-light">
+          <tr><th>Invoice</th><th>Client</th><th>Amount</th><th>Due Date</th><th>Days Overdue</th><th></th></tr>
+        </thead>
+        <tbody>
+        {% for inv in overdue %}
+        <tr>
+          <td class="font-mono small">{{ inv.invoice_number }}</td>
+          <td>{{ inv.client.client_name }}</td>
+          <td class="fw-600 text-danger">₹{{ "{:,.2f}".format(inv.total) }}</td>
+          <td>{{ inv.due_date.strftime('%d %b %Y') }}</td>
+          <td><span class="badge bg-danger">{{ (today - inv.due_date).days }} days</span></td>
+          <td>
+            <a href="{{ url_for('view_invoice', invoice_id=inv.id) }}" class="btn btn-sm btn-outline-primary">View</a>
+          </td>
+        </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+  {% endif %}
+
+  <!-- Payment Breakdown -->
+  <div class="card mt-4 p-4">
+    <h6 class="fw-700 mb-3">Payment Status Breakdown</h6>
+    {% if total > 0 %}
+    <div class="d-flex rounded overflow-hidden mb-3" style="height:20px;">
+      {% if paid %}<div style="width:{{ (paid/total*100)|int }}%;background:#28a745;" title="Paid ₹{{ '{:,.0f}'.format(paid) }}"></div>{% endif %}
+      {% if partial %}<div style="width:{{ (partial/total*100)|int }}%;background:#ffc107;" title="Partial ₹{{ '{:,.0f}'.format(partial) }}"></div>{% endif %}
+      {% if unpaid %}<div style="width:{{ (unpaid/total*100)|int }}%;background:#dc3545;" title="Unpaid ₹{{ '{:,.0f}'.format(unpaid) }}"></div>{% endif %}
+    </div>
+    <div class="d-flex gap-4 small">
+      <span><span class="badge bg-success me-1">●</span>Paid ₹{{ "{:,.0f}".format(paid) }}</span>
+      <span><span class="badge bg-warning me-1">●</span>Partial ₹{{ "{:,.0f}".format(partial) }}</span>
+      <span><span class="badge bg-danger me-1">●</span>Unpaid ₹{{ "{:,.0f}".format(unpaid) }}</span>
+    </div>
+    {% else %}
+    <p class="text-muted small">No invoice data yet.</p>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

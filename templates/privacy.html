@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+{% block title %}Privacy Policy – GSTLink{% endblock %}
+{% block meta_description %}GSTLink Privacy Policy. Learn how we collect, use, and protect your personal data in compliance with Indian IT Act and GDPR.{% endblock %}
+{% block content %}
+<div class="legal-page">
+  <h1>Privacy Policy</h1>
+  <p class="last-updated">Last updated: March 2025 &nbsp;·&nbsp; Effective: March 2025</p>
+
+  <p>GSTLink ("we", "us", or "our") operates the GSTLink invoice platform. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you use our service. Please read this carefully. By using GSTLink, you agree to the practices described below.</p>
+
+  <h2>1. Information We Collect</h2>
+  <p>We collect information you provide directly:</p>
+  <ul>
+    <li><strong>Account data:</strong> Your name, email address, and password (stored as a one-way hash).</li>
+    <li><strong>Business data:</strong> GSTIN, business name, address, and bank details you enter for invoicing.</li>
+    <li><strong>Invoice data:</strong> Client names, GSTINs, amounts, and service descriptions in invoices you create.</li>
+    <li><strong>Payment data:</strong> Subscription payments are processed by Stripe. We do not store card numbers — Stripe handles all payment data under their own Privacy Policy.</li>
+    <li><strong>Usage data:</strong> Pages visited, features used, and error logs, collected automatically to improve the service.</li>
+  </ul>
+
+  <h2>2. How We Use Your Information</h2>
+  <ul>
+    <li>To provide, maintain, and improve the GSTLink service.</li>
+    <li>To generate GST-compliant invoices on your behalf.</li>
+    <li>To process subscription payments via Stripe.</li>
+    <li>To send transactional emails (invoice confirmations, payment receipts, compliance reminders).</li>
+    <li>To respond to your support requests.</li>
+    <li>To comply with applicable laws including the Indian IT Act, 2000 and GST regulations.</li>
+  </ul>
+
+  <h2>3. Data Sharing</h2>
+  <p>We do not sell your personal data. We share data only with:</p>
+  <ul>
+    <li><strong>Stripe</strong> — for payment processing. See <a href="https://stripe.com/in/privacy" target="_blank">Stripe Privacy Policy</a>.</li>
+    <li><strong>Groq / OpenAI</strong> — contract text you submit to the AI parser is sent to Groq's API for processing. Do not include sensitive personal data beyond what is necessary.</li>
+    <li><strong>Railway.app</strong> — our cloud hosting provider, located in data centres compliant with industry security standards.</li>
+    <li><strong>Law enforcement</strong> — only when required by valid legal process under Indian law.</li>
+  </ul>
+
+  <h2>4. Cookies</h2>
+  <p>We use essential session cookies to keep you logged in. We do not use advertising, tracking, or analytics cookies. You may dismiss the cookie notice to acknowledge this. Disabling cookies will prevent login from working.</p>
+
+  <h2>5. Data Retention</h2>
+  <p>We retain your account and invoice data for as long as your account is active, and for up to 7 years thereafter for tax and legal compliance purposes (as required under the GST Act). You may request deletion of your account at any time by emailing <a href="mailto:support@gstlink.in">support@gstlink.in</a>.</p>
+
+  <h2>6. Security</h2>
+  <p>We use HTTPS/TLS encryption in transit, hashed passwords (bcrypt), and access controls to protect your data. No system is 100% secure; please use a strong password and keep it confidential.</p>
+
+  <h2>7. Your Rights</h2>
+  <p>You have the right to access, correct, or delete your personal data. You may also request a copy of your data. To exercise these rights, email <a href="mailto:support@gstlink.in">support@gstlink.in</a>. For EU/EEA users, additional rights under GDPR apply including the right to object to processing and the right to data portability.</p>
+
+  <h2>8. Children</h2>
+  <p>GSTLink is not directed to individuals under 18. We do not knowingly collect data from minors. If you believe a minor has created an account, contact us and we will delete it promptly.</p>
+
+  <h2>9. Changes to This Policy</h2>
+  <p>We may update this policy from time to time. We will notify registered users by email of material changes. Continued use after the effective date constitutes acceptance of the updated policy.</p>
+
+  <h2>10. Contact</h2>
+  <p>For privacy concerns or requests: <a href="mailto:support@gstlink.in">support@gstlink.in</a><br/>
+  GSTLink, India 🇮🇳</p>
+</div>
+{% endblock %}

@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+{% block title %}Invoice History – GSTLink{% endblock %}
+{% block content %}
+<div class="container py-4">
+  <div class="page-header d-flex justify-content-between align-items-center">
+    <h4 class="page-title"><i class="bi bi-archive me-2" style="color:var(--teal)"></i>Invoice History</h4>
+    <a href="{{ url_for('new_invoice') }}" class="btn btn-primary"><i class="bi bi-plus me-1"></i>New Invoice</a>
+  </div>
+
+  <!-- Filters -->
+  <div class="mb-3 d-flex gap-2">
+    <a href="{{ url_for('invoice_history') }}" class="btn btn-sm {{ 'btn-primary' if not status_filter else 'btn-outline-secondary' }}">All</a>
+    <a href="{{ url_for('invoice_history', status='unpaid') }}" class="btn btn-sm {{ 'btn-primary' if status_filter == 'unpaid' else 'btn-outline-secondary' }}">Unpaid</a>
+    <a href="{{ url_for('invoice_history', status='paid') }}" class="btn btn-sm {{ 'btn-primary' if status_filter == 'paid' else 'btn-outline-secondary' }}">Paid</a>
+    <a href="{{ url_for('invoice_history', status='partial') }}" class="btn btn-sm {{ 'btn-primary' if status_filter == 'partial' else 'btn-outline-secondary' }}">Partial</a>
+  </div>
+
+  {% if invoices.items %}
+  <div class="card">
+    <div class="table-responsive">
+      <table class="table table-hover mb-0">
+        <thead><tr>
+          <th>Invoice No</th><th>Client</th><th>Description</th><th>Date</th><th>Amount</th><th>GST</th><th>Total</th><th>Status</th><th>Actions</th>
+        </tr></thead>
+        <tbody>
+          {% for inv in invoices.items %}
+          <tr>
+            <td><span class="mono fw-600" style="color:var(--teal)">{{ inv.invoice_number }}</span></td>
+            <td>{{ inv.client.client_name }}</td>
+            <td class="text-muted small" style="max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ inv.description or '—' }}</td>
+            <td class="small">{{ inv.created_at.strftime('%d %b %Y') }}</td>
+            <td>₹{{ "%.0f"|format(inv.amount) }}</td>
+            <td class="small" style="color:var(--teal)">
+              {% if inv.gst_type == 'CGST_SGST' %}C+S: ₹{{ "%.0f"|format(inv.cgst + inv.sgst) }}
+              {% else %}IGST: ₹{{ "%.0f"|format(inv.igst) }}{% endif %}
+            </td>
+            <td class="fw-700">₹{{ "%.0f"|format(inv.total) }}</td>
+            <td><span class="status-badge status-{{ inv.payment_status }}">{{ inv.payment_status.title() }}</span></td>
+            <td>
+              <div class="d-flex gap-1">
+                <a href="{{ url_for('view_invoice', invoice_id=inv.id) }}" class="btn btn-sm btn-outline-primary" title="View"><i class="bi bi-eye"></i></a>
+                {% if inv.pdf_path %}<a href="{{ url_for('download_invoice', invoice_id=inv.id) }}" class="btn btn-sm btn-outline-secondary" title="Download"><i class="bi bi-download"></i></a>{% endif %}
+              </div>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Pagination -->
+  {% if invoices.pages > 1 %}
+  <div class="d-flex justify-content-center mt-4">
+    <nav><ul class="pagination">
+      {% if invoices.has_prev %}<li class="page-item"><a class="page-link" href="?page={{ invoices.prev_num }}">Previous</a></li>{% endif %}
+      {% for p in invoices.iter_pages() %}
+        {% if p %}<li class="page-item {{ 'active' if p == invoices.page }}"><a class="page-link" href="?page={{ p }}">{{ p }}</a></li>
+        {% else %}<li class="page-item disabled"><a class="page-link">…</a></li>{% endif %}
+      {% endfor %}
+      {% if invoices.has_next %}<li class="page-item"><a class="page-link" href="?page={{ invoices.next_num }}">Next</a></li>{% endif %}
+    </ul></nav>
+  </div>
+  {% endif %}
+
+  {% else %}
+  <div class="empty-state">
+    <i class="bi bi-receipt"></i>
+    <h5>No invoices found</h5>
+    <p class="text-muted">Create your first invoice to get started</p>
+    <a href="{{ url_for('new_invoice') }}" class="btn btn-primary">Create Invoice</a>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

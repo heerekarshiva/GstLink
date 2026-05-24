@@ -1,0 +1,99 @@
+{% extends "base.html" %}
+{% block title %}Profile – GSTLink{% endblock %}
+{% block content %}
+<div class="container py-4">
+  <div class="row justify-content-center">
+    <div class="col-lg-7">
+      <div class="page-header">
+        <h4 class="page-title"><i class="bi bi-person-gear me-2" style="color:var(--teal)"></i>Freelancer Profile</h4>
+      </div>
+      <div class="card p-4">
+        <form method="POST">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+          <div class="form-section">
+            <div class="section-title"><i class="bi bi-person"></i>Personal Info</div>
+            <div class="row g-3">
+              <div class="col-md-6">
+                <label class="form-label">Full Name *</label>
+                <input type="text" name="name" class="form-control" value="{{ current_user.name }}" required>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">Business / Brand Name</label>
+                <input type="text" name="business_name" class="form-control" value="{{ current_user.business_name or '' }}" placeholder="YourBrand Studio">
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">Phone</label>
+                <input type="tel" name="phone" class="form-control" value="{{ current_user.phone or '' }}" placeholder="+91 98765 43210">
+              </div>
+              <div class="col-12">
+                <label class="form-label">Business Address</label>
+                <textarea name="address" class="form-control" rows="2" placeholder="Flat 101, Brigade Road, Bengaluru, Karnataka 560001">{{ current_user.address or '' }}</textarea>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-section">
+            <div class="section-title"><i class="bi bi-shield"></i>GST Information</div>
+            <div class="row g-3">
+              <div class="col-md-6">
+                <label class="form-label">Your GSTIN</label>
+                <input type="text" name="gstin" class="form-control mono" value="{{ current_user.gstin or '' }}" placeholder="29AABCU9603R1ZX" maxlength="15" style="text-transform:uppercase">
+                <div class="form-text">Required for CGST/IGST auto-detection</div>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">Default HSN/SAC Code</label>
+                <select name="hsn_code" class="form-select">
+                  <option value="">Select your service type</option>
+                  {% for code, desc in hsn_codes.items() %}
+                  <option value="{{ code }}" {{ 'selected' if current_user.hsn_code == code }}>{{ code }} — {{ desc }}</option>
+                  {% endfor %}
+                </select>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">Default Hourly Rate (₹)</label>
+                <div class="input-group">
+                  <span class="input-group-text">₹</span>
+                  <input type="number" name="hourly_rate" class="form-control" value="{{ current_user.hourly_rate or '' }}" placeholder="2500">
+                  <span class="input-group-text">/hr</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="d-flex align-items-center justify-content-between">
+            <div class="small text-muted">
+              Plan: <strong>{{ current_user.plan_type.upper() }}</strong>
+              {% if current_user.plan_type == 'free' %} — <a href="{{ url_for('pricing') }}" style="color:var(--teal)">Upgrade to Pro</a>{% endif %}
+            </div>
+            <button type="submit" class="btn btn-primary px-4">Save Profile</button>
+          </div>
+        </form>
+
+        <!-- Security Section -->
+        <hr class="my-4">
+        <div class="d-flex align-items-center justify-content-between flex-wrap gap-3">
+          <div>
+            <div class="fw-600 mb-1"><i class="bi bi-envelope me-2" style="color:var(--teal)"></i>Email Verification</div>
+            {% if current_user.email_verified %}
+              <span class="badge bg-success"><i class="bi bi-check-circle me-1"></i>Verified</span>
+            {% else %}
+              <span class="badge bg-warning text-dark">Not verified</span>
+              <a href="{{ url_for('resend_verification') }}" class="btn btn-sm btn-outline-warning ms-2">Resend Email</a>
+            {% endif %}
+          </div>
+          <a href="{{ url_for('change_password') }}" class="btn btn-outline-secondary btn-sm">
+            <i class="bi bi-shield-lock me-1"></i>Change Password
+          </a>
+        </div>
+
+        <hr class="mt-4 mb-3">
+        <div class="d-flex justify-content-end">
+          <a href="{{ url_for('delete_account') }}" class="btn btn-sm btn-outline-danger">
+            <i class="bi bi-trash me-1"></i>Delete My Account
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

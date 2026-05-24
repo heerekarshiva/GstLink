@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% block title %}Clients – GSTLink{% endblock %}
+{% block content %}
+<div class="container py-4">
+  <div class="page-header d-flex justify-content-between align-items-center">
+    <h4 class="page-title"><i class="bi bi-people me-2" style="color:var(--teal)"></i>Client Directory</h4>
+    <a href="{{ url_for('add_client') }}" class="btn btn-primary"><i class="bi bi-person-plus me-1"></i>Add Client</a>
+  </div>
+
+  {% if clients %}
+  <div class="row g-3">
+    {% for c in clients %}
+    <div class="col-md-6 col-lg-4">
+      <div class="card h-100">
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-start">
+            <div class="d-flex align-items-center gap-3">
+              <div class="avatar-sm" style="width:44px;height:44px;font-size:18px;border-radius:12px">{{ c.client_name[0].upper() }}</div>
+              <div>
+                <div class="fw-700">{{ c.client_name }}</div>
+                {% if c.client_gstin %}<div class="small mono text-muted">{{ c.client_gstin }}</div>{% endif %}
+                {% if c.state %}<div class="small text-muted"><i class="bi bi-geo-alt me-1"></i>{{ c.state }}</div>{% endif %}
+              </div>
+            </div>
+          </div>
+          {% if c.email %}<div class="small text-muted mt-2"><i class="bi bi-envelope me-1"></i>{{ c.email }}</div>{% endif %}
+          {% if c.phone %}<div class="small text-muted"><i class="bi bi-phone me-1"></i>{{ c.phone }}</div>{% endif %}
+          <div class="d-flex gap-2 mt-3">
+            <a href="{{ url_for('new_invoice') }}?client_id={{ c.id }}" class="btn btn-sm btn-primary flex-fill">New Invoice</a>
+            <form method="POST" action="{{ url_for('delete_client', cid=c.id) }}" onsubmit="return confirm('Delete {{ c.client_name }}?')" class="d-inline">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+              <button type="submit" class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i></button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+  {% else %}
+  <div class="empty-state">
+    <i class="bi bi-people"></i>
+    <h5>No clients yet</h5>
+    <p class="text-muted">Add your first client to start creating invoices</p>
+    <a href="{{ url_for('add_client') }}" class="btn btn-primary">Add Client</a>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

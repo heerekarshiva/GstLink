@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+{% block title %}{{ "Login" if mode == "login" else "Register" }} – GSTLink{% endblock %}
+{% block content %}
+<div class="min-vh-100 d-flex align-items-center justify-content-center py-5" style="background:linear-gradient(135deg,#f0faf9,#e8f5f3)">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-md-5 col-lg-4">
+        <div class="text-center mb-4">
+          <a href="{{ url_for('landing') }}" class="text-decoration-none">
+            <div class="d-inline-flex align-items-center gap-2">
+              <div class="brand-icon" style="width:40px;height:40px;font-size:20px;">G</div>
+              <span class="brand-text fs-4">GST<span class="brand-accent">Link</span></span>
+            </div>
+          </a>
+        </div>
+        <div class="card border-0 shadow-lg p-4">
+          <h4 class="fw-800 mb-1">{{ "Welcome back!" if mode == "login" else "Create your account" }}</h4>
+          <p class="text-muted small mb-4">{{ "Login to your GSTLink account" if mode == "login" else "Start invoicing for free — no credit card needed" }}</p>
+
+          <form method="POST">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            {% if mode == "register" %}
+            <div class="mb-3">
+              <label class="form-label">Full Name *</label>
+              <input type="text" name="name" class="form-control" placeholder="Rahul Sharma" required>
+            </div>
+            {% endif %}
+            <div class="mb-3">
+              <label class="form-label">Email *</label>
+              <input type="email" name="email" class="form-control" placeholder="you@example.com" required>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Password *</label>
+              <input type="password" name="password" class="form-control" placeholder="Min 6 characters" required minlength="6">
+            </div>
+            {% if mode == "register" %}
+            <div class="mb-4">
+              <label class="form-label">GSTIN <span class="text-muted">(optional)</span></label>
+              <input type="text" name="gstin" class="form-control mono" placeholder="29AABCU9603R1ZX" maxlength="15" style="text-transform:uppercase">
+              <div class="form-text">You can add this later in profile settings</div>
+            </div>
+            {% endif %}
+            <button type="submit" class="btn btn-primary w-100 py-2">
+              {{ "Login to GSTLink" if mode == "login" else "Create Free Account" }}
+            </button>
+          </form>
+
+          <div class="text-center mt-3">
+            {% if mode == "login" %}
+            <span class="text-muted small">Don't have an account? <a href="{{ url_for('register') }}" class="text-decoration-none fw-600" style="color:var(--teal)">Register free</a></span>
+            {% else %}
+            <span class="text-muted small">Already have an account? <a href="{{ url_for('login') }}" class="text-decoration-none fw-600" style="color:var(--teal)">Login</a></span>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
