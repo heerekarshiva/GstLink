@@ -5,9 +5,7 @@
   <div class="page-header">
     <div class="d-flex justify-content-between align-items-center">
       <h4 class="page-title"><i class="bi bi-plus-circle me-2" style="color:var(--teal)"></i>Create New Invoice</h4>
-      <button class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#contractModal">
-        <i class="bi bi-stars me-2"></i>AI Contract Parser
-      </button>
+
     </div>
   </div>
 
@@ -16,10 +14,6 @@
     <div class="row g-4">
       <!-- LEFT COLUMN: Form -->
       <div class="col-lg-7">
-
-        <!-- Hidden fields for AI Contract Parser to populate -->
-        <input type="hidden" id="client_name" name="client_name" value="">
-        <input type="hidden" id="client_gstin" name="client_gstin" value="">
 
         <!-- Client Section -->
         <div class="form-section">
@@ -153,31 +147,4 @@
   </form>
 </div>
 
-<!-- AI Contract Parser Modal -->
-<div class="modal fade" id="contractModal" tabindex="-1">
-  <div class="modal-dialog modal-lg">
-    <div class="modal-content">
-      <div class="modal-header border-0">
-        <h5 class="modal-title fw-700"><i class="bi bi-stars me-2" style="color:var(--teal)"></i>AI Contract Parser</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-      </div>
-      <div class="modal-body">
-        <p class="text-muted small mb-3">Paste your contract or project agreement below. Our AI will extract client name, amount, GSTIN, and service description automatically.</p>
-        <textarea id="contractText" class="form-control" rows="10" placeholder="Paste your contract text here...
-
-Example:
-This Service Agreement is entered between Acme Corp Pvt Ltd (GSTIN: 27AADCA1234F1Z5) and the Freelancer for development of an e-commerce website. The total project value is ₹75,000 excluding GST. Payment is due within 30 days of invoice."></textarea>
-        <div class="mt-2 small text-muted">
-          <i class="bi bi-lock me-1"></i>Your contract text is processed securely and not stored.
-        </div>
-      </div>
-      <div class="modal-footer border-0">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-        <button type="button" class="btn btn-primary" id="parseContractBtn">
-          <i class="bi bi-stars me-2"></i>Parse with AI
-        </button>
-      </div>
-    </div>
-  </div>
-</div>
 {% endblock %}
