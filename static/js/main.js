@@ -68,54 +68,6 @@ function resetGSTDisplay() {
   });
 }
 
-// AI Contract Parser
-function setupContractParser() {
-  const btn = document.getElementById('parseContractBtn');
-  if (!btn) return;
-
-  btn.addEventListener('click', async () => {
-    const text = document.getElementById('contractText')?.value || '';
-    if (text.length < 20) { alert('Please paste more contract text.'); return; }
-
-    btn.disabled = true;
-    btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Parsing with AI...';
-
-    try {
-      const res = await fetch('/ai/parse-contract', {
-        method: 'POST',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({text})
-      });
-      const data = await res.json();
-      if (data.error && !data.client_name) { alert('Parse error: ' + data.error); return; }
-
-      // Fill form fields - FIXED: Added client_name and client_gstin field mapping
-      if (data.client_name) setVal('client_name', data.client_name);
-      if (data.client_gstin) setVal('client_gstin', data.client_gstin);
-      if (data.amount) setVal('amount', data.amount);
-      if (data.description) setVal('description', data.description);
-      if (data.hsn_sac) setVal('hsn_sac', data.hsn_sac);
-
-      document.getElementById('contractModal')?.querySelector('[data-bs-dismiss="modal"]')?.click();
-      
-      // Show parsed result
-      if (data.client_name || data.client_gstin) {
-        showToast(`✅ AI extracted: ${data.client_name || ''} ${data.client_gstin ? '• GSTIN: '+data.client_gstin : ''}`);
-      }
-
-      // Trigger GST recalculation
-      document.getElementById('amount')?.dispatchEvent(new Event('input'));
-
-    } catch(e) {
-      console.error('AI parse error:', e);
-      alert('Failed to parse contract. Please try again or check your Groq API key.');
-    } finally {
-      btn.disabled = false;
-      btn.innerHTML = '<i class="bi bi-stars me-2"></i>Parse with AI';
-    }
-  });
-}
-
 function setVal(id, val) {
   const el = document.getElementById(id);
   if (el) el.value = val;
@@ -139,15 +91,7 @@ function setupInvoiceActions() {
     const action = btn.dataset.action;
 
     if (action === 'whatsapp') {
-      // Values read from DOM data attributes — never interpolated into JS at render time
-      const invoiceNo = btn.dataset.invoice || '';
-      const total    = btn.dataset.total   || '';
-      const client   = btn.dataset.client  || '';
-      const link     = btn.dataset.link    || '';
-      const msg = encodeURIComponent(
-        `Hi ${client},\\n\\nPlease find your invoice *${invoiceNo}* for ₹${total}.\\n\\nView & download: ${link}\\n\\n_Sent via GSTLink_`
-      );
-      window.open(`https://wa.me/?text=${msg}`, '_blank');
+      handleWhatsAppShare(btn);
     }
 
     if (action === 'copy') {
@@ -155,6 +99,54 @@ function setupInvoiceActions() {
       navigator.clipboard.writeText(link).then(() => showToast('✅ Link copied!'));
     }
   });
+}
+
+// Sends the invoice PDF straight into WhatsApp (or whichever app the user
+// picks) via the native share sheet when the device/browser supports sharing
+// files. Falls back to a wa.me text message with the view link when it
+// doesn't (e.g. most desktop browsers, where WhatsApp Web has no public way
+// to attach a file automatically).
+async function handleWhatsAppShare(btn) {
+  const invoiceNo = btn.dataset.invoice || '';
+  const total     = btn.dataset.total   || '';
+  const client    = btn.dataset.client  || '';
+  const link      = btn.dataset.link    || '';
+  const pdfUrl    = btn.dataset.pdf     || '';
+  const pdfName   = btn.dataset.pdfName || `${invoiceNo || 'invoice'}.pdf`;
+
+  const messageText = `Hi ${client}, please find your invoice ${invoiceNo} for ₹${total}. Sent via GSTLink`;
+
+  if (pdfUrl && navigator.canShare) {
+    const originalHTML = btn.innerHTML;
+    try {
+      btn.disabled = true;
+      btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Preparing PDF...';
+
+      const res = await fetch(pdfUrl, { credentials: 'same-origin' });
+      if (!res.ok) throw new Error('PDF fetch failed');
+      const blob = await res.blob();
+      const file = new File([blob], pdfName, { type: 'application/pdf' });
+
+      if (navigator.canShare({ files: [file] })) {
+        await navigator.share({ files: [file], text: messageText });
+        return; // user picked an app (or cancelled) — nothing else to do
+      }
+    } catch (err) {
+      // AbortError means the user closed the share sheet — not a real error
+      if (err && err.name === 'AbortError') return;
+      console.error('WhatsApp file share failed, falling back to link:', err);
+    } finally {
+      btn.disabled = false;
+      btn.innerHTML = originalHTML;
+    }
+  }
+
+  // Fallback: desktop browsers / unsupported devices — open wa.me with the
+  // message + view link, since there's no URL-based way to attach a file.
+  const fallbackMsg = encodeURIComponent(
+    `Hi ${client},\n\nPlease find your invoice *${invoiceNo}* for ₹${total}.\n\nView & download: ${link}\n\n_Sent via GSTLink_`
+  );
+  window.open(`https://wa.me/?text=${fallbackMsg}`, '_blank');
 }
 
 // Copy link (kept for any remaining callers)
@@ -180,7 +172,6 @@ function animateNumbers() {
 // Init
 document.addEventListener('DOMContentLoaded', () => {
   setupGSTCalculator();
-  setupContractParser();
   setupInvoiceActions();
   animateNumbers();
   
