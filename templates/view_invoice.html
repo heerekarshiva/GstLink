@@ -18,7 +18,8 @@
               data-invoice="{{ invoice.invoice_number | e }}"
               data-total="{{ '%.2f'|format(invoice.total) }}"
               data-client="{{ client.client_name | e }}"
-              data-link="{{ config.BASE_URL }}/invoice/view/{{ invoice.public_token | e }}">
+              data-link="{{ config.BASE_URL }}/invoice/view/{{ invoice.public_token | e }}"
+              {% if invoice.pdf_path %}data-pdf="{{ url_for('download_invoice', invoice_id=invoice.id) }}" data-pdf-name="{{ invoice.invoice_number | e }}.pdf"{% endif %}>
         <i class="bi bi-whatsapp"></i>Send via WhatsApp
       </button>
     </div>
@@ -147,7 +148,8 @@
                     data-invoice="{{ invoice.invoice_number | e }}"
                     data-total="{{ '%.2f'|format(invoice.total) }}"
                     data-client="{{ client.client_name | e }}"
-                    data-link="{{ config.BASE_URL }}/invoice/view/{{ invoice.public_token | e }}">
+                    data-link="{{ config.BASE_URL }}/invoice/view/{{ invoice.public_token | e }}"
+                    {% if invoice.pdf_path %}data-pdf="{{ url_for('download_invoice', invoice_id=invoice.id) }}" data-pdf-name="{{ invoice.invoice_number | e }}.pdf"{% endif %}>
               <i class="bi bi-whatsapp"></i>Send via WhatsApp
             </button>
             {% if invoice.pdf_path %}
