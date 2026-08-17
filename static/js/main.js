@@ -6,14 +6,22 @@ function setupGSTCalculator() {
   const gstRateSelect = document.getElementById('gst_rate');
   const supplierStateEl = document.getElementById('supplier_state_hidden');
   const clientIdSelect = document.getElementById('client_id');
+  const currencySelect = document.getElementById('currency');
+  const exchangeRateInput = document.getElementById('exchange_rate');
 
   if (!amountInput || !gstRateSelect) return;
 
   async function recalculate() {
-    const amount = parseFloat(amountInput.value) || 0;
+    const enteredAmount = parseFloat(amountInput.value) || 0;
     const gstRate = parseFloat(gstRateSelect.value) || 18;
     const supplierState = supplierStateEl ? supplierStateEl.value : '';
-    
+
+    // Multi-currency: GST is always calculated in INR. If a foreign currency
+    // is selected, convert the entered amount using the supplied exchange rate.
+    const currency = currencySelect ? currencySelect.value : 'INR';
+    const exchangeRate = (currency !== 'INR' && exchangeRateInput) ? (parseFloat(exchangeRateInput.value) || 0) : 1;
+    const amount = currency !== 'INR' ? enteredAmount * exchangeRate : enteredAmount;
+
     // Get client state from selected option
     let clientState = '';
     if (clientIdSelect && clientIdSelect.selectedOptions[0]) {
@@ -36,6 +44,8 @@ function setupGSTCalculator() {
   amountInput.addEventListener('input', recalculate);
   gstRateSelect.addEventListener('change', recalculate);
   if (clientIdSelect) clientIdSelect.addEventListener('change', recalculate);
+  if (currencySelect) currencySelect.addEventListener('change', recalculate);
+  if (exchangeRateInput) exchangeRateInput.addEventListener('input', recalculate);
 }
 
 function updateGSTDisplay(data) {
@@ -91,7 +101,7 @@ function setupInvoiceActions() {
     const action = btn.dataset.action;
 
     if (action === 'whatsapp') {
-      handleWhatsAppShare(btn);
+      shareInvoiceViaWhatsApp(btn);
     }
 
     if (action === 'copy') {
@@ -101,20 +111,20 @@ function setupInvoiceActions() {
   });
 }
 
-// Sends the invoice PDF straight into WhatsApp (or whichever app the user
-// picks) via the native share sheet when the device/browser supports sharing
-// files. Falls back to a wa.me text message with the view link when it
-// doesn't (e.g. most desktop browsers, where WhatsApp Web has no public way
-// to attach a file automatically).
-async function handleWhatsAppShare(btn) {
+// Share the actual invoice PDF through the device's native share sheet (WhatsApp,
+// Mail, etc.) when the browser supports the Web Share API with file attachments
+// (Level 2 — most mobile browsers over HTTPS). WhatsApp's web/desktop click-to-chat
+// link (wa.me) has no mechanism to pre-attach a file for security reasons, so on
+// browsers that can't share files (desktop, unsupported browsers) we fall back to
+// opening WhatsApp with the message + link, same as before.
+async function shareInvoiceViaWhatsApp(btn) {
   const invoiceNo = btn.dataset.invoice || '';
-  const total     = btn.dataset.total   || '';
-  const client    = btn.dataset.client  || '';
-  const link      = btn.dataset.link    || '';
-  const pdfUrl    = btn.dataset.pdf     || '';
-  const pdfName   = btn.dataset.pdfName || `${invoiceNo || 'invoice'}.pdf`;
+  const total    = btn.dataset.total   || '';
+  const client   = btn.dataset.client  || '';
+  const link     = btn.dataset.link    || '';
+  const pdfUrl   = btn.dataset.pdf     || '';
 
-  const messageText = `Hi ${client}, please find your invoice ${invoiceNo} for ₹${total}. Sent via GSTLink`;
+  const shareText = `Hi ${client},\n\nPlease find your invoice *${invoiceNo}* for ₹${total}.\n\n_Sent via GSTLink_`;
 
   if (pdfUrl && navigator.canShare) {
     const originalHTML = btn.innerHTML;
@@ -123,30 +133,35 @@ async function handleWhatsAppShare(btn) {
       btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Preparing PDF...';
 
       const res = await fetch(pdfUrl, { credentials: 'same-origin' });
-      if (!res.ok) throw new Error('PDF fetch failed');
+      if (!res.ok) throw new Error('Could not fetch PDF');
       const blob = await res.blob();
-      const file = new File([blob], pdfName, { type: 'application/pdf' });
+      const file = new File([blob], `${invoiceNo || 'invoice'}.pdf`, { type: 'application/pdf' });
 
       if (navigator.canShare({ files: [file] })) {
-        await navigator.share({ files: [file], text: messageText });
-        return; // user picked an app (or cancelled) — nothing else to do
+        await navigator.share({
+          files: [file],
+          title: `Invoice ${invoiceNo}`,
+          text: shareText
+        });
+        btn.disabled = false;
+        btn.innerHTML = originalHTML;
+        return;
       }
-    } catch (err) {
-      // AbortError means the user closed the share sheet — not a real error
-      if (err && err.name === 'AbortError') return;
-      console.error('WhatsApp file share failed, falling back to link:', err);
-    } finally {
       btn.disabled = false;
       btn.innerHTML = originalHTML;
+    } catch (err) {
+      btn.disabled = false;
+      btn.innerHTML = originalHTML;
+      // User cancelling the native share sheet throws AbortError — not an error to report
+      if (err && err.name === 'AbortError') return;
+      console.error('PDF share failed, falling back to WhatsApp link:', err);
+      // fall through to link-based share below
     }
   }
 
-  // Fallback: desktop browsers / unsupported devices — open wa.me with the
-  // message + view link, since there's no URL-based way to attach a file.
-  const fallbackMsg = encodeURIComponent(
-    `Hi ${client},\n\nPlease find your invoice *${invoiceNo}* for ₹${total}.\n\nView & download: ${link}\n\n_Sent via GSTLink_`
-  );
-  window.open(`https://wa.me/?text=${fallbackMsg}`, '_blank');
+  // Fallback: open WhatsApp with a pre-filled message + link to view/download the PDF
+  const fallbackText = `Hi ${client},\n\nPlease find your invoice *${invoiceNo}* for ₹${total}.\n\nView & download: ${link}\n\n_Sent via GSTLink_`;
+  window.open(`https://wa.me/?text=${encodeURIComponent(fallbackText)}`, '_blank');
 }
 
 // Copy link (kept for any remaining callers)
