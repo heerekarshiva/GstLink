@@ -67,10 +67,28 @@
           <div class="section-title"><i class="bi bi-calculator"></i>Amount & GST</div>
           <input type="hidden" id="supplier_state_hidden" value="{{ current_user.gstin[:2] if current_user.gstin else '' }}">
           <div class="row g-3">
-            <div class="col-md-6">
-              <label class="form-label">Taxable Amount (₹) *</label>
+            <div class="col-md-4">
+              <label class="form-label">Currency</label>
+              <select name="currency" id="currency" class="form-select">
+                {% for cur in currencies %}
+                <option value="{{ cur }}" {{ 'selected' if cur == 'INR' else '' }}>{{ cur }}</option>
+                {% endfor %}
+              </select>
+            </div>
+            <div class="col-md-8" id="exchange_rate_wrap" style="display:none">
+              <label class="form-label">Exchange Rate <span class="text-muted">(1 <span id="cur_label">USD</span> = ? INR)</span></label>
               <div class="input-group">
                 <span class="input-group-text">₹</span>
+                <input type="number" name="exchange_rate" id="exchange_rate" class="form-control" placeholder="e.g. 83.25" step="0.0001" min="0.0001">
+              </div>
+              <div class="form-text">GST is always calculated and payable in INR — this converts your entered amount to INR for tax purposes.</div>
+            </div>
+          </div>
+          <div class="row g-3 mt-0">
+            <div class="col-md-6">
+              <label class="form-label">Taxable Amount (<span id="amount_currency_label">₹</span>) *</label>
+              <div class="input-group">
+                <span class="input-group-text" id="amount_prefix">₹</span>
                 <input type="number" name="amount" id="amount" class="form-control" placeholder="50000" step="0.01" min="1" required>
               </div>
             </div>
@@ -108,11 +126,11 @@
       <div class="col-lg-5">
         <div class="sticky-top" style="top:80px">
           <div class="card">
-            <div class="card-header"><i class="bi bi-eye me-2"></i>Live GST Preview</div>
+            <div class="card-header"><i class="bi bi-eye me-2"></i>Live GST Preview <span class="text-muted small fw-normal">(always in ₹ INR)</span></div>
             <div class="card-body p-3">
               <table class="table table-sm gst-table mb-0">
                 <tr><td class="text-muted">Supply Type</td><td class="fw-600 text-end" id="display_gst_type">—</td></tr>
-                <tr><td class="text-muted">Taxable Amount</td><td class="fw-600 text-end" id="display_base">₹0.00</td></tr>
+                <tr><td class="text-muted">Taxable Amount (INR)</td><td class="fw-600 text-end" id="display_base">₹0.00</td></tr>
                 <tr id="cgst_sgst_row" style="display:none">
                   <td class="text-muted">CGST</td><td class="fw-600 text-end" id="display_cgst" style="color:var(--teal)">₹0.00</td>
                 </tr>
@@ -146,5 +164,31 @@
     </div>
   </form>
 </div>
+
+<script>
+  (function() {
+    const currencySelect = document.getElementById('currency');
+    const rateWrap = document.getElementById('exchange_rate_wrap');
+    const curLabel = document.getElementById('cur_label');
+    const amountCurLabel = document.getElementById('amount_currency_label');
+    const amountPrefix = document.getElementById('amount_prefix');
+    const exchangeRateInput = document.getElementById('exchange_rate');
+    if (!currencySelect) return;
+
+    function toggleCurrency() {
+      const cur = currencySelect.value;
+      const isForeign = cur !== 'INR';
+      rateWrap.style.display = isForeign ? '' : 'none';
+      exchangeRateInput.required = isForeign;
+      curLabel.textContent = cur;
+      amountCurLabel.textContent = isForeign ? cur : '₹';
+      amountPrefix.textContent = isForeign ? cur : '₹';
+      document.getElementById('amount')?.dispatchEvent(new Event('input'));
+    }
+    currencySelect.addEventListener('change', toggleCurrency);
+    exchangeRateInput?.addEventListener('input', () => document.getElementById('amount')?.dispatchEvent(new Event('input')));
+    toggleCurrency();
+  })();
+</script>
 
 {% endblock %}
