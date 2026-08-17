@@ -32,9 +32,6 @@ class Config:
     STRIPE_PRICE_ID = os.environ.get('STRIPE_PRICE_ID', '')
     STRIPE_WEBHOOK_SECRET = os.environ.get('STRIPE_WEBHOOK_SECRET', '')
 
-    # ── AI ───────────────────────────────────────────────────────────
-    GROQ_API_KEY = os.environ.get('GROQ_API_KEY', '')
-
     # ── MAIL (Flask-Mail) ─────────────────────────────────────────────
     # Set all MAIL_* vars in Railway environment variables panel.
     # Use Gmail app passwords or any SMTP provider (Resend, Mailgun, etc.)
