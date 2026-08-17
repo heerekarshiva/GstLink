@@ -1073,7 +1073,7 @@ def terms():
 def robots_txt():
     from flask import Response
     base = app.config.get('BASE_URL', 'https://gstlink.in')
-    content = f"""User-agent: *\nAllow: /\nDisallow: /dashboard\nDisallow: /invoice/\nDisallow: /invoices\nDisallow: /clients\nDisallow: /compliance\nDisallow: /profile\nDisallow: /checkout/\nDisallow: /ai/\nDisallow: /api/\nDisallow: /invoice/view/\n\nSitemap: {base}/sitemap.xml\n"""
+    content = f"""User-agent: *\nAllow: /\nDisallow: /dashboard\nDisallow: /invoice/\nDisallow: /invoices\nDisallow: /clients\nDisallow: /compliance\nDisallow: /profile\nDisallow: /checkout/\nDisallow: /api/\nDisallow: /invoice/view/\n\nSitemap: {base}/sitemap.xml\n"""
     return Response(content, mimetype='text/plain')
 
 
