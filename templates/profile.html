@@ -8,7 +8,7 @@
         <h4 class="page-title"><i class="bi bi-person-gear me-2" style="color:var(--teal)"></i>Freelancer Profile</h4>
       </div>
       <div class="card p-4">
-        <form method="POST">
+        <form method="POST" enctype="multipart/form-data">
           <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
           <div class="form-section">
             <div class="section-title"><i class="bi bi-person"></i>Personal Info</div>
@@ -60,6 +60,34 @@
             </div>
           </div>
 
+          <div class="form-section">
+            <div class="section-title"><i class="bi bi-palette"></i>Custom Branding</div>
+            <div class="row g-3 align-items-center">
+              <div class="col-md-6">
+                <label class="form-label">Invoice Logo</label>
+                {% if current_user.logo_filename %}
+                <div class="mb-2 d-flex align-items-center gap-2">
+                  <img src="{{ url_for('static', filename='logo/' + current_user.logo_filename) }}" alt="Your logo" style="height:48px;max-width:120px;object-fit:contain;border:1px solid var(--border);border-radius:6px;padding:4px;">
+                  <label class="small text-danger" style="cursor:pointer">
+                    <input type="checkbox" name="remove_logo" value="1"> Remove logo
+                  </label>
+                </div>
+                {% endif %}
+                <input type="file" name="logo" class="form-control" accept="image/png,image/jpeg">
+                <div class="form-text">PNG or JPG, up to 2MB. Shown on every invoice PDF header.</div>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">Brand Colour</label>
+                <div class="input-group">
+                  <input type="color" id="brand_color_picker" name="brand_color" class="form-control form-control-color"
+                         value="{{ current_user.brand_color or '#00897B' }}" title="Choose your brand colour">
+                  <input type="text" id="brand_color_hex" class="form-control mono" value="{{ current_user.brand_color or '#00897B' }}" readonly>
+                </div>
+                <div class="form-text">Used for totals and accents on your invoices.</div>
+              </div>
+            </div>
+          </div>
+
           <div class="d-flex align-items-center justify-content-between">
             <div class="small text-muted">
               Plan: <strong>{{ current_user.plan_type.upper() }}</strong>
@@ -68,6 +96,11 @@
             <button type="submit" class="btn btn-primary px-4">Save Profile</button>
           </div>
         </form>
+        <script>
+          document.getElementById('brand_color_picker')?.addEventListener('input', function(e) {
+            document.getElementById('brand_color_hex').value = e.target.value;
+          });
+        </script>
 
         <!-- Security Section -->
         <hr class="my-4">
