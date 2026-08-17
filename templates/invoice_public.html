@@ -16,12 +16,22 @@ body{font-family:'Segoe UI',sans-serif;background:#f0faf9;}
 <body>
 <div class="inv-box">
   <div class="d-flex justify-content-between align-items-start mb-4">
-    <div class="brand">GST<span>Link</span></div>
+    {% if invoice.creator.logo_filename %}
+    <img src="{{ url_for('static', filename='logo/' + invoice.creator.logo_filename) }}" alt="logo" style="max-height:40px;max-width:150px;object-fit:contain;">
+    {% else %}
+    <div class="brand" style="color:{{ invoice.creator.brand_color or '#00897B' }}">GST<span>Link</span></div>
+    {% endif %}
     <div class="verified-badge">✅ Verified Invoice</div>
   </div>
   <h4 class="fw-700">Invoice #{{ invoice.invoice_number }}</h4>
   <p class="text-muted">Issued: {{ invoice.created_at.strftime('%d %b %Y') }}</p>
   <hr>
+  {% if invoice.is_foreign_currency and invoice.foreign_amount %}
+  <div class="small text-muted mb-3">
+    Billed as {{ invoice.currency_symbol }}{{ "%.2f"|format(invoice.foreign_amount) }} {{ invoice.currency }}
+    (GST computed and payable in INR as required under Indian law)
+  </div>
+  {% endif %}
   <div class="row g-3 mb-4">
     <div class="col-6">
       <div class="small text-muted fw-600">BILLED TO</div>
