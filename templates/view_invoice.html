@@ -19,7 +19,7 @@
               data-total="{{ '%.2f'|format(invoice.total) }}"
               data-client="{{ client.client_name | e }}"
               data-link="{{ config.BASE_URL }}/invoice/view/{{ invoice.public_token | e }}"
-              {% if invoice.pdf_path %}data-pdf="{{ url_for('download_invoice', invoice_id=invoice.id) }}" data-pdf-name="{{ invoice.invoice_number | e }}.pdf"{% endif %}>
+              {% if invoice.pdf_path %}data-pdf="{{ url_for('download_invoice', invoice_id=invoice.id) }}"{% endif %}>
         <i class="bi bi-whatsapp"></i>Send via WhatsApp
       </button>
     </div>
@@ -31,7 +31,11 @@
       <div class="invoice-preview">
         <div class="inv-header d-flex justify-content-between align-items-start">
           <div>
-            <div class="inv-brand">GST<span>Link</span></div>
+            {% if supplier.logo_filename %}
+            <img src="{{ url_for('static', filename='logo/' + supplier.logo_filename) }}" alt="{{ supplier.business_name or supplier.name }} logo" style="max-height:44px;max-width:160px;object-fit:contain;margin-bottom:4px;">
+            {% else %}
+            <div class="inv-brand" style="color:{{ supplier.brand_color or 'var(--teal)' }}">GST<span>Link</span></div>
+            {% endif %}
             <div class="text-muted small">Tax Invoice</div>
           </div>
           <div class="text-end">
@@ -70,6 +74,13 @@
         </div>
 
         <!-- Line Item -->
+        {% if invoice.is_foreign_currency and invoice.foreign_amount %}
+        <div class="mb-2 small text-muted">
+          <i class="bi bi-currency-exchange me-1"></i>
+          Billed as {{ invoice.currency_symbol }}{{ "%.2f"|format(invoice.foreign_amount) }} {{ invoice.currency }}
+          @ 1 {{ invoice.currency }} = ₹{{ "%.4f"|format(invoice.exchange_rate) }} → GST calculated in INR below.
+        </div>
+        {% endif %}
         <table class="table gst-table border rounded">
           <thead style="background:var(--dark);color:white;">
             <tr>
@@ -149,7 +160,7 @@
                     data-total="{{ '%.2f'|format(invoice.total) }}"
                     data-client="{{ client.client_name | e }}"
                     data-link="{{ config.BASE_URL }}/invoice/view/{{ invoice.public_token | e }}"
-                    {% if invoice.pdf_path %}data-pdf="{{ url_for('download_invoice', invoice_id=invoice.id) }}" data-pdf-name="{{ invoice.invoice_number | e }}.pdf"{% endif %}>
+                    {% if invoice.pdf_path %}data-pdf="{{ url_for('download_invoice', invoice_id=invoice.id) }}"{% endif %}>
               <i class="bi bi-whatsapp"></i>Send via WhatsApp
             </button>
             {% if invoice.pdf_path %}
